@@ -9,6 +9,11 @@
         public string Password { get; set; }
         public UserType Role { get; set; }
 
+        public User()
+        {
+
+        }
+
         public User(string name, string surname, string email, string password, UserType role)
         {
             Id = Guid.NewGuid();
