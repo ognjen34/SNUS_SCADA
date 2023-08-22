@@ -1,3 +1,7 @@
+using SKADA.Models.Users.Model;
+using SKADA.Models.Users.Repository;
+using SKADA.Models.Users.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<AppDbContext>();
+
+builder.Services.AddTransient<IUserRepository<User>, UserRepository<User>>();
+builder.Services.AddTransient<IUserService, UserService>();
+
 
 var app = builder.Build();
 
