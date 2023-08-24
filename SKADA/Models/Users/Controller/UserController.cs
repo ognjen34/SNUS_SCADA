@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using SKADA.Models.DTOS;
 using SKADA.Models.Users.Model;
 using SKADA.Models.Users.Service;
+using System.Security.Claims;
 
 namespace SKADA.Models.Users.Controller
 {
@@ -16,26 +19,36 @@ namespace SKADA.Models.Users.Controller
             _userService = userService;
         }
 
+        [Microsoft.AspNetCore.Authorization.AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
             User user = await _userService.GetByEmail(model.Username);
-            if (user == null)
+            
+            if(user == null)
             {
-                return NotFound("User not found");
+                return BadRequest("User with this email does not exist");
+
             }
-            else
+
+            var claims = new List<Claim>
             {
-                if(user.Password != model.Password)
-                {
-                    return BadRequest("Credetials are not good");
-                }
-                
-            }
+                new Claim(ClaimTypes.Name, user.Email.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity));
+
             return Ok(user);
         }
 
+
         [HttpPost("register")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddUser([FromBody] CreateUserDTO user)
         {
             

@@ -13,7 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Inputs\Repository\" />
+    <Folder Include="Models\Devices\Controller\" />
+    <Folder Include="Models\Inputs\Controller\" />
     <Folder Include="Models\Outputs\Repository\" />
   </ItemGroup>
 
