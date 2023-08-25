@@ -15,6 +15,8 @@ public class AppDbContext : DbContext
     public DbSet<Device> Device { get; set; }
     public DbSet<DigitalReadInstance> DigitalReadInstances { get; set; }
     public DbSet<AnalogInput> AnalogInput { get; set; }
+    public DbSet<Alarm> Alarms { get; set; }
+    public DbSet<AlarmInstance> AlarmInstances { get; set; }
     public DbSet<AnalogOutput> AnalogOutput { get; set; }
     public DbSet<DigitalInput> DigitalInput { get; set; }
     public DbSet<DigitalOutput> DigitalOutput { get; set;}
@@ -36,7 +38,6 @@ public class AppDbContext : DbContext
                 cfg.Property(dc => dc.LowLimit);
                 cfg.Property(dc => dc.HighLimit);
                 cfg.Property(dc => dc.SimulationType);
-                // Define other properties of DeviceConfig here
             });
         });
     }
@@ -61,10 +62,16 @@ public class AppDbContext : DbContext
                  "admin123",
                  UserType.ADMIN
              ));
+        var lowAlarm = new Alarm(new Guid(),Alarm.AlarmType.LOW, Alarm.AlarmPriority.LOW, "L", 45);
+        var highAlarm = new Alarm(new Guid(),Alarm.AlarmType.HIGH, Alarm.AlarmPriority.HIGH, "L", 55);
+
+        Alarms.Add(lowAlarm);
+        Alarms.Add(highAlarm);
+
         AnalogInput.AddAsync(
             new AnalogInput(
-                new Guid(),"Deskripcija 1","uredjaj1",1,true,"L",new List<Alarm>()
-                ));
+                Guid.NewGuid(), "Deskripcija 1", "uredjaj1", 1, true, "L", new List<Alarm> { lowAlarm, highAlarm }
+            ));
         DigitalInput.AddAsync(
             new DigitalInput(
                 new Guid(), "Deskripcija digitalnog", "uredjaj2", 1, true

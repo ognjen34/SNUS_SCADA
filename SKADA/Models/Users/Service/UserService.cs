@@ -25,7 +25,7 @@ namespace SKADA.Models.Users.Service
             await _userRepository.Add(user);
         }
 
-        public async Task DeleteUser(int id)
+        public async Task DeleteUser(Guid id)
         {
             var user = await _userRepository.GetById(id);
             if (user != null)
@@ -53,7 +53,7 @@ namespace SKADA.Models.Users.Service
             return user;
         }
 
-        public async Task<User> GetById(int id)
+        public async Task<User> GetById(Guid id)
         {
             User user = await _userRepository.GetById(id);
 
@@ -66,7 +66,7 @@ namespace SKADA.Models.Users.Service
             return user;
         }
 
-        public async Task<User> UpdateUser(int id, User user)
+        public async Task<User> UpdateUser(Guid id, User user)
         {
            
             var existingUser = await _userRepository.GetById(id);

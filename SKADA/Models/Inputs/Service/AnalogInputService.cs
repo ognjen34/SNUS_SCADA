@@ -1,7 +1,10 @@
-﻿using SKADA.Models.Devices.Model;
+﻿using SKADA.Models.Alarms.Model;
+using SKADA.Models.Alarms.Repository;
+using SKADA.Models.Devices.Model;
 using SKADA.Models.Devices.Repository;
 using SKADA.Models.Inputs.Model;
 using SKADA.Models.Inputs.Repository;
+using static SKADA.Models.Alarms.Model.Alarm;
 
 namespace SKADA.Models.Inputs.Service
 {
@@ -11,8 +14,11 @@ namespace SKADA.Models.Inputs.Service
         private readonly IAnalogInputRepository _analogInputRepository;
         private readonly IDeviceRepository _deviceRepository;
         private readonly IAnalogReadInstanceRepository _analogReadInstanceRepository;
-        public AnalogInputService(IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository,IDeviceRepository deviceRepository, IAnalogReadInstanceRepository analogReadInstanceRepository)
+        private readonly IAlarmInstanceRepository _alarmInstanceRepository;
+
+        public AnalogInputService(IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository,IDeviceRepository deviceRepository, IAnalogReadInstanceRepository analogReadInstanceRepository,IAlarmInstanceRepository alarmInstanceRepository)
         {
+            _alarmInstanceRepository = alarmInstanceRepository;
             _analogInputRepository = analogInputRepository;
             _deviceRepository = deviceRepository;
             _analogReadInstanceRepository = analogReadInstanceRepository;
@@ -79,6 +85,38 @@ namespace SKADA.Models.Inputs.Service
                         );
                         Console.WriteLine(("READING ANALOG:" + device.IOAdress + "  " + ioAnalogData.Value));
                         await _analogReadInstanceRepository.Create(ioAnalogData);
+
+                        foreach (Alarm analogInputAlarm in analogInput.Alarms)
+                        {
+                            if ((analogInputAlarm.Type == AlarmType.HIGH &&
+                                 analogInputAlarm.CriticalValue < device.Value) ||
+                                (analogInputAlarm.Type == AlarmType.LOW && analogInputAlarm.CriticalValue > device.Value))
+                            {
+                                AlarmInstance alarmAlert = new AlarmInstance
+                                {
+                                    Id = new Guid(),
+                                    AlarmId = analogInputAlarm.Id,
+                                    Timestamp = DateTime.Now,
+                                    Value = device.Value
+                                };
+                                await _alarmInstanceRepository.Add(alarmAlert);
+                                await Globals.Globals._fileSemaphore.WaitAsync();
+
+                                try
+                                {
+                                    using (StreamWriter outputFile = new StreamWriter("alarmsLog.txt", true))
+                                    {
+                                        await outputFile.WriteAsync("Alarm " + alarmAlert.AlarmId + " critical value for tag " + ioAnalogData.TagId + " at " + alarmAlert.Timestamp + "\n");
+                                    }
+                                }
+                                finally
+                                {
+                                    Globals.Globals._fileSemaphore.Release();
+                                }
+
+
+                            }
+                        }
 
                     }
                     else

@@ -67,10 +67,10 @@ namespace SKADA.Models.Users.Controller
 
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, User user)
+        [HttpPut("")]
+        public async Task<IActionResult> UpdateUser(User user)
         {
-            var existingUser = await _userService.UpdateUser(id, user);
+            var existingUser = await _userService.UpdateUser(user.Id, user);
             if (existingUser == null)
             {
                 

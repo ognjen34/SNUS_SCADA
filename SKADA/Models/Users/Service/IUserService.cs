@@ -5,10 +5,10 @@ namespace SKADA.Models.Users.Service
     public interface IUserService
     {
         Task AddUser(DTOS.CreateUserDTO user);
-        Task<User> UpdateUser(int id, User user);
+        Task<User> UpdateUser(Guid id, User user);
         Task<bool> UserExists(string email);
-        Task<User> GetById(int id);
-        Task DeleteUser(int id);
+        Task<User> GetById(Guid id);
+        Task DeleteUser(Guid id);
         Task<User> GetByEmail(string email);
 
     }

@@ -15,7 +15,7 @@ namespace SKADA.Models.Users.Repository
         }
 
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetById(Guid id)
         {
             return await _users.FirstOrDefaultAsync(user => user.Id.Equals(id));
         }

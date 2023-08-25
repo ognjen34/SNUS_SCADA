@@ -1,4 +1,6 @@
 using SKADA;
+using SKADA.Models.Alarms.Repository;
+using SKADA.Models.Alarms.Service;
 using SKADA.Models.Devices.Repository;
 using SKADA.Models.Devices.Service;
 using SKADA.Models.Inputs.Repository;
@@ -27,6 +29,9 @@ builder.Services.AddTransient<IDigitalInputService, DigitalInputService>();
 builder.Services.AddTransient<IDigitalReadInstanceRepository, DigitalReadInstanceRepository>();
 builder.Services.AddTransient<IAnalogReadInstanceRepository, AnalogReadInstanceRepository>();
 builder.Services.AddTransient<IAnalogReadInstanceService, AnalogReadInstanceService>();
+builder.Services.AddTransient<IAlarmInstanceRepository, AlarmInstanceRepository>();
+builder.Services.AddTransient<IAlarmRepository, AlarmRepository>();
+builder.Services.AddTransient<IAlarmService, AlarmService>();
 
 
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
