@@ -4,10 +4,10 @@ namespace SKADA.Models.Inputs.Service
 {
     public interface IAnalogInputService
     {
-        Task<AnalogInput> GetAll();
+        Task<IEnumerable<AnalogInput>> GetAll();
         Task<AnalogInput> Get(Guid id);
-        Task<AnalogInput> Create(AnalogInput input);
-        Task<AnalogInput> Update(AnalogInput input);
-        Task<AnalogInput> Delete(Guid id);
+        Task Create(AnalogInput input);
+        Task Update(AnalogInput input);
+        Task Delete(Guid id);
     }
 }

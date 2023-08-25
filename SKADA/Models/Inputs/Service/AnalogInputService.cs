@@ -1,4 +1,6 @@
-﻿using SKADA.Models.Inputs.Model;
+﻿using SKADA.Models.Devices.Model;
+using SKADA.Models.Devices.Repository;
+using SKADA.Models.Inputs.Model;
 using SKADA.Models.Inputs.Repository;
 
 namespace SKADA.Models.Inputs.Service
@@ -7,33 +9,85 @@ namespace SKADA.Models.Inputs.Service
     {
 
         private readonly IAnalogInputRepository _analogInputRepository;
-        public AnalogInputService(IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository)
+        private readonly IDeviceRepository _deviceRepository;
+        private readonly IAnalogReadInstanceRepository _analogReadInstanceRepository;
+        public AnalogInputService(IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository,IDeviceRepository deviceRepository, IAnalogReadInstanceRepository analogReadInstanceRepository)
         {
             _analogInputRepository = analogInputRepository;
+            _deviceRepository = deviceRepository;
+            _analogReadInstanceRepository = analogReadInstanceRepository;
+            
         }
-        public Task<AnalogInput> Create(AnalogInput input)
+        public async Task Create(AnalogInput input)
         {
-            throw new NotImplementedException();
+            await _analogInputRepository.Create(input);
+            
         }
 
-        public Task<AnalogInput> Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            throw new NotImplementedException();
+            await _analogInputRepository?.Delete(id);
         }
 
         public Task<AnalogInput> Get(Guid id)
         {
-            throw new NotImplementedException();
+            return _analogInputRepository.Get(id);
         }
 
-        public Task<AnalogInput> GetAll()
+        public Task<IEnumerable<AnalogInput>> GetAll()
         {
-            throw new NotImplementedException();
+            return _analogInputRepository.GetAll();
         }
 
-        public Task<AnalogInput> Update(AnalogInput input)
+        public async Task Update(AnalogInput input)
         {
-            throw new NotImplementedException();
+            await _analogInputRepository.Update(input);
+        }
+        public async Task startDigitalDataReading()
+        {
+            foreach (AnalogInput di in _analogInputRepository.GetAll().Result.ToList())
+            {
+                if (di.Scan)
+                {
+                    readSingleAnalogData(di.Id);
+                }
+            }
+        }
+
+        private async Task readSingleAnalogData(Guid tagId)
+        {
+            new Thread(async () =>
+            {
+                Thread.CurrentThread.IsBackground = true;
+                while (true)
+                {
+                    AnalogInput analogInput = await _analogInputRepository.Get(tagId);
+                    if (analogInput == null)
+                        break;
+
+                    if (analogInput.Scan)
+                    {
+
+                        Device device = _deviceRepository.GetByIOAddress(analogInput.IOAddress).Result;
+                        AnalogReadInstance ioAnalogData = new AnalogReadInstance
+                        (
+                            new Guid(),
+                            device.IOAdress,
+                            device.Value,
+                            DateTime.Now,
+                            analogInput.Id
+                        );
+                        await _analogReadInstanceRepository.Create(ioAnalogData);
+
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    Thread.Sleep(analogInput.ScanTime * 1000);
+
+                }
+            }).Start();
         }
     }
 }

@@ -21,5 +21,10 @@
             SIMULATION,
             RTU
         }
+        public Device()
+        {
+            
+        }
     }
+
 }

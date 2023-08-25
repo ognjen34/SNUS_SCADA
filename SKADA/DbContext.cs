@@ -17,6 +17,8 @@ public class AppDbContext : DbContext
     public DbSet<DigitalInput> DigitalInput { get; set; }
     public DbSet<DigitalOutput> DigitalOutput { get; set;}
 
+    public DbSet<AnalogReadInstance> AnalogReadInstance { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseInMemoryDatabase("HCI");
