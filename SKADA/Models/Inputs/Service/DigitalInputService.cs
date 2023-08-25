@@ -25,6 +25,11 @@ namespace SKADA.Models.Inputs.Service
 
         }
 
+        public async Task Create(DigitalInput input)
+        {
+            await _digitalInputRepository.Create(input);
+        }
+
         public async Task startDigitalDataReading()
         {
             foreach(DigitalInput di in _digitalInputRepository.GetAll().Result.ToList())
@@ -35,7 +40,11 @@ namespace SKADA.Models.Inputs.Service
                 }
             }
         }
-        
+        public Task<IEnumerable<DigitalInput>> GetAll()
+        {
+            return _digitalInputRepository.GetAll();
+        }
+
         private async Task readSingleDigitalData(Guid tagId)
         {
             new Thread(async () =>
