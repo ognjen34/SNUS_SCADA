@@ -1,32 +1,76 @@
-﻿using SKADA.Models.Inputs.Model;
+﻿using SKADA.Models.Devices.Model;
+using SKADA.Models.Devices.Repository;
+using SKADA.Models.Inputs.Model;
+using SKADA.Models.Inputs.Repository;
 
 namespace SKADA.Models.Inputs.Service
 {
     public class DigitalInputService : IDigitalInputService
     {
-        public Task<DigitalInput> Create(DigitalInput input)
+
+        private readonly IAnalogInputRepository _analogInputRepository;
+        private readonly IDigitalInputRepository _digitalInputRepository;
+        private readonly IDeviceRepository _deviceRepository;
+        private readonly IDigitalReadInstanceRepository _digitalReadInstanceRepository;
+
+
+        public DigitalInputService(IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository,
+            IDeviceRepository deviceRepository,IDigitalReadInstanceRepository digitalReadInstanceRepository)
         {
-            throw new NotImplementedException();
+            _analogInputRepository = analogInputRepository;
+            _digitalInputRepository = digitalInputRepository;
+            _deviceRepository = deviceRepository;
+            _digitalReadInstanceRepository =  digitalReadInstanceRepository;
+
+
         }
 
-        public Task<DigitalInput> Delete(Guid id)
+        public async Task startDigitalDataReading()
         {
-            throw new NotImplementedException();
+            foreach(DigitalInput di in _digitalInputRepository.GetAll().Result.ToList())
+            {
+                if (di.Scan)
+                {
+                    readSingleDigitalData(di.Id);
+                }
+            }
         }
-
-        public Task<DigitalInput> Get(Guid id)
+        
+        private async Task readSingleDigitalData(Guid tagId)
         {
-            throw new NotImplementedException();
-        }
+            new Thread(async () =>
+            {
+                Thread.CurrentThread.IsBackground = true;
+                while (true)
+                {
+                    DigitalInput digitalInput = await _digitalInputRepository.Get(tagId);
+                    if (digitalInput == null)
+                        break;
 
-        public Task<DigitalInput> GetAll()
-        {
-            throw new NotImplementedException();
-        }
+                    if (digitalInput.Scan)
+                    {
 
-        public Task<DigitalInput> Update(DigitalInput input)
-        {
-            throw new NotImplementedException();
+                        Device device = _deviceRepository.GetByIOAddress(digitalInput.IOAddress).Result;
+                        DigitalReadInstance ioDigitalData = new DigitalReadInstance
+                        (
+                            new Guid(),
+                            device.IOAdress,
+                            device.Value,
+                            DateTime.Now,
+                            digitalInput.Id
+                        );
+                        await _digitalReadInstanceRepository.Create(ioDigitalData);
+                        Console.WriteLine(("READING DIGITAL:" + device.IOAdress + "  " + ioDigitalData.Value));
+
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    Thread.Sleep(digitalInput.ScanTime * 1000);
+
+                }
+            }).Start();
         }
     }
 }

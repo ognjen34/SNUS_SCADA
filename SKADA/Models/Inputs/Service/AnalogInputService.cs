@@ -43,7 +43,7 @@ namespace SKADA.Models.Inputs.Service
         {
             await _analogInputRepository.Update(input);
         }
-        public async Task startDigitalDataReading()
+        public async Task startAnalogDataReading()
         {
             foreach (AnalogInput di in _analogInputRepository.GetAll().Result.ToList())
             {
@@ -77,6 +77,7 @@ namespace SKADA.Models.Inputs.Service
                             DateTime.Now,
                             analogInput.Id
                         );
+                        Console.WriteLine(("READING ANALOG:" + device.IOAdress + "  " + ioAnalogData.Value));
                         await _analogReadInstanceRepository.Create(ioAnalogData);
 
                     }

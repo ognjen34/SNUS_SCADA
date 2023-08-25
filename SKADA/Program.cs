@@ -1,3 +1,8 @@
+using SKADA;
+using SKADA.Models.Devices.Repository;
+using SKADA.Models.Devices.Service;
+using SKADA.Models.Inputs.Repository;
+using SKADA.Models.Inputs.Service;
 using SKADA.Models.Users.Model;
 using SKADA.Models.Users.Repository;
 using SKADA.Models.Users.Service;
@@ -13,6 +18,16 @@ builder.Services.AddSingleton<AppDbContext>();
 
 builder.Services.AddTransient<IUserRepository<User>, UserRepository<User>>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IDeviceRepository, DeviceRepository>();
+builder.Services.AddTransient<IDeviceService, DeviceService>();
+builder.Services.AddTransient<IAnalogInputService, AnalogInputService>();
+builder.Services.AddTransient<IAnalogInputRepository, AnalogInputRepository>();
+builder.Services.AddTransient<IDigitalInputRepository, DigitalInputRepository>();
+builder.Services.AddTransient<IDigitalInputService, DigitalInputService>();
+builder.Services.AddTransient<IDigitalReadInstanceRepository, DigitalReadInstanceRepository>();
+builder.Services.AddTransient<IAnalogReadInstanceRepository, AnalogReadInstanceRepository>();
+builder.Services.AddTransient<IAnalogReadInstanceService, AnalogReadInstanceService>();
+
 
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -48,6 +63,8 @@ builder.Services.AddAuthorization(options =>
     });
 
 });
+builder.Services.AddHostedService<BackgroundStartupService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

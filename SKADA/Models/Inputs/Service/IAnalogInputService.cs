@@ -9,5 +9,7 @@ namespace SKADA.Models.Inputs.Service
         Task Create(AnalogInput input);
         Task Update(AnalogInput input);
         Task Delete(Guid id);
+        Task startAnalogDataReading();
+
     }
 }

@@ -62,5 +62,10 @@ namespace SKADA.Models.Inputs.Repository
             }
             return input;
         }
+
+        public Task<AnalogReadInstance> GetByTagId(Guid id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

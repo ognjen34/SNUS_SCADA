@@ -48,9 +48,7 @@ namespace SKADA.Models.Devices.Service
                         List<DigitalInput> digitalInputTry = _digitalInputRepository.GetByIOAddress(device.IOAdress).Result.ToList();
                         if (digitalInputTry.Count != 0)
                         {
-                            foreach (DigitalInput digitalInput in digitalInputTry)
-                            {
-                                if (device.deviceType == Device.DeviceType.SIMULATION)
+                            if (device.deviceType == Device.DeviceType.SIMULATION)
                                 {
                                     switch (device.deviceConfig.SimulationType)
                                     {
@@ -72,14 +70,11 @@ namespace SKADA.Models.Devices.Service
                                     else
                                         device.Value = 0;
                                 }
-                            }
                         }
                         List<AnalogInput> analogInputTry = _analogInputRepository.GetByIOAddress(device.IOAdress).Result.ToList();
                         if(analogInputTry.Count != 0)
                         {
-                            foreach (AnalogInput analogInput in analogInputTry)
-                            {
-                                if(device.deviceType == Device.DeviceType.SIMULATION)
+                            if(device.deviceType == Device.DeviceType.SIMULATION)
                                 {
                                     switch (device.deviceConfig.SimulationType)
                                     {
@@ -94,18 +89,18 @@ namespace SKADA.Models.Devices.Service
                                             break;
                                     }
                                 }
-                                if(device.deviceType == Device.DeviceType.RTU)
+                            if(device.deviceType == Device.DeviceType.RTU)
+                            {
+                                double newValue = device.Value * (r.NextDouble() * 0.4 + 0.8);
+                                if (Math.Abs(device.Value - newValue) < 0.01)
+                                    device.Value = (device.deviceConfig.LowLimit + device.deviceConfig.HighLimit) * 0.5;
+                                else
                                 {
-                                    double newValue = device.Value * (r.NextDouble() * 0.4 + 0.8);
-                                    if (Math.Abs(device.Value - newValue) < 0.01)
-                                        device.Value = (device.deviceConfig.LowLimit + device.deviceConfig.HighLimit) * 0.5;
-                                    else
-                                    {
-                                        device.Value = newValue;
-                                    }
+                                    device.Value = newValue;
                                 }
                             }
                         }
+                        Console.WriteLine(device.IOAdress+"  "+device.Value);
                     }
                     Thread.Sleep(Globals.Globals.DeviceRefresh);
 

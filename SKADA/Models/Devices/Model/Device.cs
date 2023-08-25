@@ -8,12 +8,13 @@
         public Double Value { get; set; }
         public DeviceConfig deviceConfig { get; set; }
 
-        public Device(string ioadress, double value, DeviceType deviceType)
+        public Device(string ioadress, double value, DeviceType deviceType,DeviceConfig deviceConfig)
         {
             Id = Guid.NewGuid();
             IOAdress = ioadress;
             Value = value;
             this.deviceType = deviceType;
+            this.deviceConfig= deviceConfig;
         }
 
         public enum DeviceType
