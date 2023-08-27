@@ -13,11 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-<<<<<<< Updated upstream
-=======
-    <Folder Include="Models\Alarms\Controller\" />
-    <Folder Include="Models\Devices\Controller\" />
->>>>>>> Stashed changes
     <Folder Include="Models\Inputs\Controller\" />
     <Folder Include="Models\Outputs\Repository\" />
   </ItemGroup>

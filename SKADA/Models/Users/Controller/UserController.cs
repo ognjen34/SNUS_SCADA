@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SKADA.Models.DTOS;
 using SKADA.Models.Users.Model;
@@ -98,6 +99,24 @@ namespace SKADA.Models.Users.Controller
             }
 
             return user;
+        }
+
+        [HttpGet("authorized")]
+        [Authorize(Policy = "ClientOnly")]
+
+        public async Task<IActionResult> GetAuthorizedDataAsync()
+        {
+
+            var userEmail = User.FindFirstValue(ClaimTypes.Name);
+
+            User user = await _userService.GetByEmail(userEmail);
+
+            if (user == null)
+            {
+                return Forbid();
+            }
+
+            return Ok(user);
         }
 
     }

@@ -33,6 +33,18 @@ builder.Services.AddTransient<IAlarmInstanceRepository, AlarmInstanceRepository>
 builder.Services.AddTransient<IAlarmRepository, AlarmRepository>();
 builder.Services.AddTransient<IAlarmService, AlarmService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Policy", builder =>
+    {
+        builder
+            .WithOrigins("http://localhost:3000") 
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -60,11 +72,11 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
     {
-        policy.RequireRole(UserType.ADMIN.ToString(),UserType.CLIENT.ToString());
+        policy.RequireRole(UserType.ADMIN.ToString());
     });
     options.AddPolicy("ClientOnly", policy =>
     {
-        policy.RequireRole(UserType.CLIENT.ToString());
+        policy.RequireRole(UserType.CLIENT.ToString(), UserType.ADMIN.ToString());
     });
 
 });
@@ -72,16 +84,17 @@ builder.Services.AddHostedService<BackgroundStartupService>();
 
 var app = builder.Build();
 
+app.UseCors("Policy");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
+app.UseAuthentication();
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 using (var scope = app.Services.CreateScope())

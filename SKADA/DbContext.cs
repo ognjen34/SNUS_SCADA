@@ -58,8 +58,8 @@ public class AppDbContext : DbContext
              (
                  "Goran",
                  "Gogic",
-                 "gogi.admin@example.com",
-                 "admin123",
+                 "admin",
+                 "123",
                  UserType.ADMIN
              ));
         var lowAlarm = new Alarm(new Guid(),Alarm.AlarmType.LOW, Alarm.AlarmPriority.LOW, "L", 45);
