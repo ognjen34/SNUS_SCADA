@@ -3,6 +3,7 @@ using SKADA.Models.Alarms.Repository;
 using SKADA.Models.Alarms.Service;
 using SKADA.Models.Devices.Repository;
 using SKADA.Models.Devices.Service;
+using SKADA.Models.Inputs.Hubs;
 using SKADA.Models.Inputs.Repository;
 using SKADA.Models.Inputs.Service;
 using SKADA.Models.Users.Model;
@@ -32,6 +33,7 @@ builder.Services.AddTransient<IAnalogReadInstanceService, AnalogReadInstanceServ
 builder.Services.AddTransient<IAlarmInstanceRepository, AlarmInstanceRepository>();
 builder.Services.AddTransient<IAlarmRepository, AlarmRepository>();
 builder.Services.AddTransient<IAlarmService, AlarmService>();
+
 
 builder.Services.AddCors(options =>
 {
@@ -81,7 +83,7 @@ builder.Services.AddAuthorization(options =>
 
 });
 builder.Services.AddHostedService<BackgroundStartupService>();
-
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 app.UseCors("Policy");
@@ -94,6 +96,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 
 app.UseAuthorization();
+app.MapHub<TagSocket>("/Hub/tag");
 
 
 app.MapControllers();

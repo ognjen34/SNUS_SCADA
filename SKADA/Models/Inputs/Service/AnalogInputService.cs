@@ -1,9 +1,13 @@
-﻿using SKADA.Models.Alarms.Model;
+﻿using Microsoft.AspNetCore.SignalR;
+using SKADA.Models.Alarms.Model;
 using SKADA.Models.Alarms.Repository;
 using SKADA.Models.Devices.Model;
 using SKADA.Models.Devices.Repository;
+using SKADA.Models.Inputs.Hubs;
 using SKADA.Models.Inputs.Model;
 using SKADA.Models.Inputs.Repository;
+using SKADA.Models.Users.Model;
+using SKADA.Models.Users.Repository;
 using static SKADA.Models.Alarms.Model.Alarm;
 
 namespace SKADA.Models.Inputs.Service
@@ -15,9 +19,13 @@ namespace SKADA.Models.Inputs.Service
         private readonly IDeviceRepository _deviceRepository;
         private readonly IAnalogReadInstanceRepository _analogReadInstanceRepository;
         private readonly IAlarmInstanceRepository _alarmInstanceRepository;
+        private readonly IHubContext<TagSocket, ITagClient> _tagSocket;
+        private readonly IUserRepository<User> _userRepository;
 
-        public AnalogInputService(IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository,IDeviceRepository deviceRepository, IAnalogReadInstanceRepository analogReadInstanceRepository,IAlarmInstanceRepository alarmInstanceRepository)
+        public AnalogInputService(IUserRepository<User> userRepository,IHubContext<TagSocket, ITagClient> tagSocket,IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository,IDeviceRepository deviceRepository, IAnalogReadInstanceRepository analogReadInstanceRepository,IAlarmInstanceRepository alarmInstanceRepository)
         {
+            _userRepository= userRepository;    
+            _tagSocket = tagSocket;
             _alarmInstanceRepository = alarmInstanceRepository;
             _analogInputRepository = analogInputRepository;
             _deviceRepository = deviceRepository;
@@ -64,60 +72,64 @@ namespace SKADA.Models.Inputs.Service
         {
             new Thread(async () =>
             {
-                Thread.CurrentThread.IsBackground = true;
-                while (true)
+            Thread.CurrentThread.IsBackground = true;
+            while (true)
+            {
+                AnalogInput analogInput = await _analogInputRepository.Get(tagId);
+                if (analogInput == null)
+                    break;
+
+                if (analogInput.Scan)
                 {
-                    AnalogInput analogInput = await _analogInputRepository.Get(tagId);
-                    if (analogInput == null)
-                        break;
 
-                    if (analogInput.Scan)
+                    Device device = _deviceRepository.GetByIOAddress(analogInput.IOAddress).Result;
+                    AnalogReadInstance ioAnalogData = new AnalogReadInstance
+                    (
+                        new Guid(),
+                        device.IOAdress,
+                        device.Value,
+                        DateTime.Now,
+                        analogInput.Id
+                    );
+                    Console.WriteLine(("READING ANALOG:" + device.IOAdress + "  " + ioAnalogData.Value));
+                    await _analogReadInstanceRepository.Create(ioAnalogData);
+
+                    foreach (Alarm analogInputAlarm in analogInput.Alarms)
                     {
-
-                        Device device = _deviceRepository.GetByIOAddress(analogInput.IOAddress).Result;
-                        AnalogReadInstance ioAnalogData = new AnalogReadInstance
-                        (
-                            new Guid(),
-                            device.IOAdress,
-                            device.Value,
-                            DateTime.Now,
-                            analogInput.Id
-                        );
-                        Console.WriteLine(("READING ANALOG:" + device.IOAdress + "  " + ioAnalogData.Value));
-                        await _analogReadInstanceRepository.Create(ioAnalogData);
-
-                        foreach (Alarm analogInputAlarm in analogInput.Alarms)
+                        if ((analogInputAlarm.Type == AlarmType.HIGH &&
+                             analogInputAlarm.CriticalValue < device.Value) ||
+                            (analogInputAlarm.Type == AlarmType.LOW && analogInputAlarm.CriticalValue > device.Value))
                         {
-                            if ((analogInputAlarm.Type == AlarmType.HIGH &&
-                                 analogInputAlarm.CriticalValue < device.Value) ||
-                                (analogInputAlarm.Type == AlarmType.LOW && analogInputAlarm.CriticalValue > device.Value))
+                            AlarmInstance alarmAlert = new AlarmInstance
                             {
-                                AlarmInstance alarmAlert = new AlarmInstance
-                                {
-                                    Id = new Guid(),
-                                    AlarmId = analogInputAlarm.Id,
-                                    Timestamp = DateTime.Now,
-                                    Value = device.Value
-                                };
-                                await _alarmInstanceRepository.Add(alarmAlert);
-                                await Globals.Globals._fileSemaphore.WaitAsync();
+                                Id = new Guid(),
+                                AlarmId = analogInputAlarm.Id,
+                                Timestamp = DateTime.Now,
+                                Value = device.Value
+                            };
+                            await _alarmInstanceRepository.Add(alarmAlert);
+                            //await Globals.Globals._fileSemaphore.WaitAsync();
 
-                                try
-                                {
-                                    using (StreamWriter outputFile = new StreamWriter("alarmsLog.txt", true))
-                                    {
-                                        await outputFile.WriteAsync("Alarm " + alarmAlert.AlarmId + " critical value for tag " + ioAnalogData.TagId + " at " + alarmAlert.Timestamp + "\n");
-                                    }
-                                }
-                                finally
-                                {
-                                    Globals.Globals._fileSemaphore.Release();
-                                }
+                            //try
+                            //{
+                            //    using (StreamWriter outputFile = new StreamWriter("alarmsLog.txt", true))
+                            //    {
+                            //        await outputFile.WriteAsync("Alarm " + alarmAlert.AlarmId + " critical value for tag " + ioAnalogData.TagId + " at " + alarmAlert.Timestamp + "\n");
+                            //    }
+                            //}
+                            //finally
+                            //{
+                            //    Globals.Globals._fileSemaphore.Release();
+                            //}
 
 
-                            }
                         }
+                    }
+                    foreach (string userId in _userRepository.GetUsersByAnalogDataId(analogInput.Id).Result.Select(u => u.Id.ToString()).ToList())
+                    {
+                      await _tagSocket.Clients.Group(userId).ReceiveAnalogData(ioAnalogData);
 
+                    }           
                     }
                     else
                     {

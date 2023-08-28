@@ -10,5 +10,8 @@ namespace SKADA.Models.Users.Repository
         Task Add(T user);
         Task Update(T user);
         Task Delete(T user);
+        Task<IEnumerable<T>> GetUsersByAnalogDataId(Guid analogDataId);
+        Task<IEnumerable<T>> GetUsersByDigitalDataId(Guid digitalDataId);
+
     }
 }

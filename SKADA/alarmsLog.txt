@@ -3066,3 +3066,5 @@ Alarm f672e905-9d5d-417c-84d4-ee09a7d6d044 critical value for tag 38a02a02-08c9-
 Alarm f672e905-9d5d-417c-84d4-ee09a7d6d044 critical value for tag 38a02a02-08c9-456d-b657-a7f58c1c5986 at 8/27/2023 5:19:52 PM
 Alarm f672e905-9d5d-417c-84d4-ee09a7d6d044 critical value for tag 38a02a02-08c9-456d-b657-a7f58c1c5986 at 8/27/2023 5:19:52 PM
 Alarm f672e905-9d5d-417c-84d4-ee09a7d6d044 critical value for tag 38a02a02-08c9-456d-b657-a7f58c1c5986 at 8/27/2023 5:19:52 PM
+Alarm a28195f6-9775-4d75-abb9-05c101c416dd critical value for tag 2568c36c-bfd7-46ab-ab51-fff3d81eafa9 at 8/28/2023 5:12:01 PM
+Alarm a28195f6-9775-4d75-abb9-05c101c416dd critical value for tag 2568c36c-bfd7-46ab-ab51-fff3d81eafa9 at 8/28/2023 5:12:02 PM

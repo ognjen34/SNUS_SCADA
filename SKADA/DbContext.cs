@@ -43,16 +43,7 @@ public class AppDbContext : DbContext
     }
     public  void InitDataBase()
     {
-        Users.AddAsync(
-             new User
-             (
-                 "Pera",
-                 "Peric",
-                 "pera.client@example.com",
-                 "pera23",
-                 UserType.CLIENT
 
-             ));
         Users.AddAsync(
             new User
              (
@@ -68,14 +59,35 @@ public class AppDbContext : DbContext
         Alarms.Add(lowAlarm);
         Alarms.Add(highAlarm);
 
+        AnalogInput analogInput = new AnalogInput(
+                Guid.NewGuid(), "Deskripcija 1", "uredjaj1", 3, true, "L", new List<Alarm> { lowAlarm, highAlarm }
+            );
+        DigitalInput digitalInput = new DigitalInput(new Guid(), "Deskripcija digitalnog", "uredjaj2", 3, true
+            );
+        AnalogInput analogInput2 = new AnalogInput(
+                Guid.NewGuid(), "Deskripcija 2", "uredjaj1", 3, true, "L", new List<Alarm> { }
+            );
         AnalogInput.AddAsync(
-            new AnalogInput(
-                Guid.NewGuid(), "Deskripcija 1", "uredjaj1", 1, true, "L", new List<Alarm> { lowAlarm, highAlarm }
-            ));
+            analogInput);
         DigitalInput.AddAsync(
-            new DigitalInput(
-                new Guid(), "Deskripcija digitalnog", "uredjaj2", 1, true
-                ));
+            digitalInput);
+        AnalogInput.AddAsync(
+            analogInput2);
+        User clientUser = new User
+         (
+             "Pera",
+             "Peric",
+             "client",
+             "123",
+             UserType.CLIENT
+
+         );
+         clientUser.analogInputs.Add(analogInput);
+        clientUser.digitalInputs.Add(digitalInput);
+        clientUser.analogInputs.Add(analogInput2);
+
+        Users.AddAsync(
+        clientUser);
         DeviceConfig deviceConfig1 = new DeviceConfig(0,100,SimulationType.RTU);
         DeviceConfig deviceConfig2 = new DeviceConfig(-1,-1,SimulationType.COS);
         Device.Add(new Device("uredjaj1", 0, SKADA.Models.Devices.Model.Device.DeviceType.RTU,deviceConfig1));

@@ -1,7 +1,11 @@
-﻿using SKADA.Models.Devices.Model;
+﻿using Microsoft.AspNetCore.SignalR;
+using SKADA.Models.Devices.Model;
 using SKADA.Models.Devices.Repository;
+using SKADA.Models.Inputs.Hubs;
 using SKADA.Models.Inputs.Model;
 using SKADA.Models.Inputs.Repository;
+using SKADA.Models.Users.Model;
+using SKADA.Models.Users.Repository;
 
 namespace SKADA.Models.Inputs.Service
 {
@@ -12,11 +16,14 @@ namespace SKADA.Models.Inputs.Service
         private readonly IDigitalInputRepository _digitalInputRepository;
         private readonly IDeviceRepository _deviceRepository;
         private readonly IDigitalReadInstanceRepository _digitalReadInstanceRepository;
+        private readonly IHubContext<TagSocket, ITagClient> _tagSocket;
+        private readonly IUserRepository<User> _userRepository;
 
-
-        public DigitalInputService(IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository,
+        public DigitalInputService(IUserRepository<User> userRepository, IHubContext<TagSocket, ITagClient> tagSocket, IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository,
             IDeviceRepository deviceRepository,IDigitalReadInstanceRepository digitalReadInstanceRepository)
         {
+            _userRepository = userRepository;
+            _tagSocket = tagSocket;
             _analogInputRepository = analogInputRepository;
             _digitalInputRepository = digitalInputRepository;
             _deviceRepository = deviceRepository;
@@ -70,6 +77,11 @@ namespace SKADA.Models.Inputs.Service
                         );
                         await _digitalReadInstanceRepository.Create(ioDigitalData);
                         Console.WriteLine(("READING DIGITAL:" + device.IOAdress + "  " + ioDigitalData.Value));
+                        foreach (string userId in _userRepository.GetUsersByDigitalDataId(digitalInput.Id).Result.Select(u => u.Id.ToString()).ToList())
+                        {
+                            await _tagSocket.Clients.Group(userId).ReceiveDigitalData(ioDigitalData);
+
+                        }
 
                     }
                     else

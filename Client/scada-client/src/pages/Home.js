@@ -18,7 +18,7 @@ function Home(props) {
 
     return (
         <div className="home-container">
-            {data.role === 0 ? <AdminHome /> : <ClientHome />}
+            {data.role === 0 ? <AdminHome data={data}/> : <ClientHome data={data}/>}
         </div>
     );
 }
