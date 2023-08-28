@@ -1,4 +1,5 @@
 using SKADA;
+using SKADA.Models.Alarms.Hubs;
 using SKADA.Models.Alarms.Repository;
 using SKADA.Models.Alarms.Service;
 using SKADA.Models.Devices.Repository;
@@ -97,6 +98,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 app.MapHub<TagSocket>("/Hub/tag");
+app.MapHub<AlarmSocket>("/Hub/alarm");
 
 
 app.MapControllers();

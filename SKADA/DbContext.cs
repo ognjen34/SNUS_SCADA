@@ -60,7 +60,7 @@ public class AppDbContext : DbContext
         Alarms.Add(highAlarm);
 
         AnalogInput analogInput = new AnalogInput(
-                Guid.NewGuid(), "Deskripcija 1", "uredjaj1", 3, true, "L", new List<Alarm> { lowAlarm, highAlarm }
+                Guid.NewGuid(), "Deskripcija 1", "uredjaj1", 10, true, "L", new List<Alarm> { lowAlarm,highAlarm }
             );
         DigitalInput digitalInput = new DigitalInput(new Guid(), "Deskripcija digitalnog", "uredjaj2", 3, true
             );

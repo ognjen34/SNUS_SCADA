@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import './Login.css';
+import './ClientHome.css';
 import TagInstance from './TagInstance';
-import tagSocketService from '../services/tagSocketService'; 
-tagSocketService.startConnection();
+import AlarmInstance from './AlarmInstance';
 
+import tagSocketService from '../services/tagSocketService'; 
+import alarmSocketService from '../services/alarmSocketService'; 
+
+tagSocketService.startConnection();
+alarmSocketService.startConnection();
 function ClientHome(props) {
     const { data } = props;
     console.log(data);
@@ -19,12 +23,21 @@ function ClientHome(props) {
       }));
     const [digitalTags,setDigitalTags] = useState(digitalTagsWithValues);
     const [analogTags,setAnalogTags] = useState(analogTagsWithValues);
+    const [alarmLogs,setAlarmLogs] = useState([]);
 
-    const cardDataList = [
-        { id: 1, label: 'Card 1 Label', value: '42' },
-        { id: 2, label: 'Card 2 Label', value: '23' },
-        // Add more card data as needed
-    ];
+    useEffect(() => {
+        const alarmListener = (newAlarmData) => {
+          console.log("DOBIO SAM ALARMMMMMM");
+          setAlarmLogs(prevAlarmLogs => [newAlarmData,...prevAlarmLogs]);
+        };
+      
+        alarmSocketService.receiveAlarmData(alarmListener);
+      
+        return () => {
+          // Clean up the event listener when the component unmounts
+          alarmSocketService.removeAlarmDataListener(alarmListener);
+        };
+      }, []);
     tagSocketService.receiveAnalogData((newAnalogData) => {
         setAnalogTags(prevAnalogTags => {
             return prevAnalogTags.map(analogTag => {
@@ -54,15 +67,26 @@ function ClientHome(props) {
     });
 
     return (
-        <div className="client-container" style={{ backgroundColor: 'red' }}>
-            {digitalTags.map(tag => (
+        <div className="client-container">
+          <div className="scrollable-container">
+            <div className="tag-container">
+              {digitalTags.map(tag => (
                 <TagInstance key={tag.id} {...tag} />
-            ))}
-            {analogTags.map(tag=>(
-                <TagInstance key={tag.id} {...tag}/>
-            ))}
+              ))}
+              {analogTags.map(tag => (
+                <TagInstance key={tag.id} {...tag} />
+              ))}
+            </div>
+          </div>
+          <div className="scrollable-container">
+            <div className="logs-container">
+              {alarmLogs.map(alarm => (
+                <AlarmInstance key={alarm.id} {...alarm} />
+              ))}
+            </div>
+          </div>
         </div>
-    );
+      );
 }
 
 export default ClientHome;
