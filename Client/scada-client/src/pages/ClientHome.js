@@ -90,10 +90,10 @@ function ClientHome(props) {
           <div className="scrollable-container">
             <div className="tag-container">
               {digitalTags.map(tag => (
-                <TagInstance key={tag.id} {...tag} />
+                <TagInstance key={tag.id} {...tag} isAdmin={false} />
               ))}
               {analogTags.map(tag => (
-                <TagInstance key={tag.id} {...tag} />
+                <TagInstance key={tag.id} {...tag} isAdmin={false}/>
               ))}
             </div>
           </div>

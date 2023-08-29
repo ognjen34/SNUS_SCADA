@@ -44,15 +44,6 @@ public class AppDbContext : DbContext
     public  void InitDataBase()
     {
 
-        Users.AddAsync(
-            new User
-             (
-                 "Goran",
-                 "Gogic",
-                 "admin",
-                 "123",
-                 UserType.ADMIN
-             ));
         var lowAlarm = new Alarm(new Guid(),Alarm.AlarmType.LOW, Alarm.AlarmPriority.LOW, "L", 45);
         var highAlarm = new Alarm(new Guid(),Alarm.AlarmType.HIGH, Alarm.AlarmPriority.HIGH, "L", 55);
 
@@ -85,9 +76,20 @@ public class AppDbContext : DbContext
          clientUser.analogInputs.Add(analogInput);
         clientUser.digitalInputs.Add(digitalInput);
         clientUser.analogInputs.Add(analogInput2);
-
+        User adminUser = new User
+             (
+                 "Goran",
+                 "Gogic",
+                 "admin",
+                 "123",
+                 UserType.ADMIN
+             );
+        adminUser.analogInputs.Add(analogInput);
+        adminUser.digitalInputs.Add(digitalInput);
+        adminUser.analogInputs.Add(analogInput2);
         Users.AddAsync(
         clientUser);
+        Users.AddAsync(adminUser);
         DeviceConfig deviceConfig1 = new DeviceConfig(0,100,SimulationType.RTU);
         DeviceConfig deviceConfig2 = new DeviceConfig(-1,-1,SimulationType.COS);
         Device.Add(new Device("uredjaj1", 0, SKADA.Models.Devices.Model.Device.DeviceType.RTU,deviceConfig1));

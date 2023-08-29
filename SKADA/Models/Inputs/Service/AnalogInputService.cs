@@ -22,12 +22,14 @@ namespace SKADA.Models.Inputs.Service
         private readonly IAlarmInstanceRepository _alarmInstanceRepository;
         private readonly IHubContext<TagSocket, ITagClient> _tagSocket;
         private readonly IUserRepository<User> _userRepository;
+        private readonly IAlarmRepository _alarmRepository;
         private readonly IHubContext<AlarmSocket, IAlarmClient> _alarmSocket;
 
-        public AnalogInputService(IHubContext<AlarmSocket, IAlarmClient> alarmSocket, IUserRepository<User> userRepository,IHubContext<TagSocket, ITagClient> tagSocket,IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository,IDeviceRepository deviceRepository, IAnalogReadInstanceRepository analogReadInstanceRepository,IAlarmInstanceRepository alarmInstanceRepository)
+        public AnalogInputService(IAlarmRepository alarmRepository,IHubContext<AlarmSocket, IAlarmClient> alarmSocket, IUserRepository<User> userRepository,IHubContext<TagSocket, ITagClient> tagSocket,IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository,IDeviceRepository deviceRepository, IAnalogReadInstanceRepository analogReadInstanceRepository,IAlarmInstanceRepository alarmInstanceRepository)
         {
             _alarmSocket =  alarmSocket;
-            _userRepository= userRepository;    
+            _alarmRepository = alarmRepository;
+            _userRepository = userRepository;    
             _tagSocket = tagSocket;
             _alarmInstanceRepository = alarmInstanceRepository;
             _analogInputRepository = analogInputRepository;
@@ -37,12 +39,44 @@ namespace SKADA.Models.Inputs.Service
         }
         public async Task Create(AnalogInput input)
         {
-            await _analogInputRepository.Create(input);
+            foreach(Alarm alarm in input.Alarms)
+            {
+                alarm.Id = Guid.NewGuid();
+                await _alarmRepository.Add(alarm);
+            }
+            AnalogInput addedInput = await _analogInputRepository.Create(input);
+            foreach(User u in _userRepository.GetAll().Result.Where(user => user.Role == UserType.ADMIN).ToList())
+            {
+                u.analogInputs.Add(input);
+                await _userRepository.Update(u);
+            }
+            await readSingleAnalogData(addedInput.Id);
             
         }
 
         public async Task Delete(Guid id)
         {
+            AnalogInput input = await _analogInputRepository.Get(id);
+
+            // Copy the alarms to avoid modifying the collection while iterating
+            List<Alarm> alarmsCopy = new List<Alarm>(input.Alarms);
+
+            // Delete the alarms
+            foreach (Alarm alarm in alarmsCopy)
+            {
+                await _alarmRepository.Delete(alarm);
+            }
+
+            // Update users
+            List<User> usersCopy = _userRepository.GetAll().Result.ToList();
+
+            foreach (User user in usersCopy)
+            {
+                user.analogInputs.Remove(input);
+                _userRepository.Update(user);
+            }
+
+            // Delete the input
             await _analogInputRepository?.Delete(id);
         }
 
@@ -55,10 +89,34 @@ namespace SKADA.Models.Inputs.Service
         {
             return _analogInputRepository.GetAll();
         }
-
-        public async Task Update(AnalogInput input)
+        public async Task Update(AnalogInput newInput)
         {
-            await _analogInputRepository.Update(input);
+            AnalogInput oldAnalogInput = await _analogInputRepository.Get(newInput.Id);
+
+            foreach (var oldAlarm in oldAnalogInput.Alarms.ToList())
+            {
+                if (!newInput.Alarms.Any(newAlarm => newAlarm.Id == oldAlarm.Id))
+                {
+                    await _alarmRepository.Delete(oldAlarm);
+                    oldAnalogInput.Alarms.Remove(oldAlarm);
+                }
+            }
+
+            foreach (var newAlarm in newInput.Alarms)
+            {
+                if (!oldAnalogInput.Alarms.Any(oldAlarm => oldAlarm.Id == newAlarm.Id))
+                {
+                    await _alarmRepository.Add(newAlarm);
+                    oldAnalogInput.Alarms.Add(newAlarm);
+                }
+            }
+            oldAnalogInput.Description = newInput.Description;
+            oldAnalogInput.IOAddress = newInput.IOAddress;
+            oldAnalogInput.Scan = newInput.Scan;
+            oldAnalogInput.ScanTime = newInput.ScanTime;
+            oldAnalogInput.Units = newInput.Units;
+
+            await _analogInputRepository.Update(oldAnalogInput);
         }
         public async Task startAnalogDataReading()
         {

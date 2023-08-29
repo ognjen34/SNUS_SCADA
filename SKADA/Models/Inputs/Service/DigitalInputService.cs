@@ -34,7 +34,36 @@ namespace SKADA.Models.Inputs.Service
 
         public async Task Create(DigitalInput input)
         {
-            await _digitalInputRepository.Create(input);
+            DigitalInput addedInput = await _digitalInputRepository.Create(input);
+            foreach (User u in _userRepository.GetAll().Result.Where(user => user.Role == UserType.ADMIN).ToList())
+            {
+                u.digitalInputs.Add(input);
+                await _userRepository.Update(u);
+            }
+            await readSingleDigitalData(addedInput.Id);
+
+        }
+
+        public async Task Update(DigitalInput newDigitalInput)
+        {
+            await _digitalInputRepository.Update(newDigitalInput);
+
+        }
+
+        public async Task Delete(Guid id)
+        {
+            DigitalInput input = await _digitalInputRepository.Get(id);
+
+            List<User> usersCopy = _userRepository.GetAll().Result.ToList();
+
+            foreach (User user in usersCopy)
+            {
+                user.digitalInputs.Remove(input);
+                _userRepository.Update(user);
+            }
+
+            // Delete the input
+            await _digitalInputRepository?.Delete(id);
         }
 
         public async Task startDigitalDataReading()

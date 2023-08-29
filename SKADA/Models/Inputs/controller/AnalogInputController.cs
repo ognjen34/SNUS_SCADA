@@ -6,6 +6,9 @@ using SKADA.Models.Devices.Service;
 using SKADA.Models.DTOS;
 using SKADA.Models.Inputs.Model;
 using SKADA.Models.Inputs.Service;
+using SKADA.Models.Users.Model;
+using SKADA.Models.Users.Service;
+using System.Security.Claims;
 
 namespace SKADA.Models.Inputs.Controller
 {
@@ -14,20 +17,27 @@ namespace SKADA.Models.Inputs.Controller
     public class AnalogInputController : ControllerBase
     {
         private readonly IAnalogInputService _analogInputService;
+        private readonly IDeviceService _deviceService;
+        private readonly IUserService _userService;
 
-        public AnalogInputController(IAnalogInputService analogInputService)
+        public AnalogInputController(IUserService userService,IAnalogInputService analogInputService, IDeviceService deviceService)
         {
+            _userService = userService;
             _analogInputService = analogInputService;
+            _deviceService = deviceService;
         }
-        [AllowAnonymous]
+
+        [Authorize(Policy = "ClientOnly")]
         [HttpGet]
         public async Task<List<AnalogInput>> GetAll()
         {
-            return (List<AnalogInput>)await _analogInputService.GetAll();
+            var userNameClaim = User.FindFirst(ClaimTypes.Name);
+            User user = _userService.GetByEmail(userNameClaim.Value).Result;
+            return user.analogInputs;
         }
 
-        [AllowAnonymous]
-        [HttpPost("analog")]
+        [Authorize(Policy = "AdminOnly")]
+        [HttpPost]
         public async Task<IActionResult> CreateAnalogInput([FromBody] AnalogInputDTO analogDTO)
         {
             AnalogInput analog = new AnalogInput();
@@ -37,9 +47,127 @@ namespace SKADA.Models.Inputs.Controller
             analog.ScanTime = analogDTO.ScanTime;
             analog.Scan = analogDTO.Scan;
             analog.Units = analogDTO.Unit;
-            analog.Alarms = new List<Alarm>();
+            List<Alarm> alarmsToAdd = new List<Alarm>();
+            foreach(AlarmDTO alarmDTO in analogDTO.Alarms)
+            {
+                Alarm alarm = new Alarm();
+                alarm.Id = Guid.NewGuid();
+                alarm.CriticalValue = alarmDTO.CriticalValue;
+                alarm.Units = alarmDTO.Units;
+                if(alarmDTO.Priority == 1)
+                {
+                    alarm.Priority = Alarm.AlarmPriority.LOW;
+
+                }
+                else if(alarmDTO.Priority == 2)
+                {
+                    alarm.Priority = Alarm.AlarmPriority.MEDIUM;
+
+                }
+                else if(alarmDTO.Priority == 3)
+                {
+                    alarm.Priority = Alarm.AlarmPriority.HIGH;
+
+                }
+                else
+                {
+                    return BadRequest();
+                }
+
+                if (alarmDTO.Type == 0)
+                {
+                    alarm.Type = Alarm.AlarmType.LOW;
+
+                }
+                else if (alarmDTO.Type == 1)
+                {
+                    alarm.Type = Alarm.AlarmType.HIGH;
+
+                }
+                else
+                {
+                    return BadRequest();
+                }
+                alarmsToAdd.Add(alarm);
+
+            }
+            analog.Alarms = alarmsToAdd;
 
             await _analogInputService.Create(analog);
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPut("")]
+        public async Task<IActionResult> UpdateAnalogInput([FromBody] UpdateAnalogInputDTO newAnalogInputDTO)
+        {
+            AnalogInput newAnalogInput = new AnalogInput();
+            newAnalogInput.Id = Guid.Parse(newAnalogInputDTO.id);
+            newAnalogInput.IOAddress = newAnalogInputDTO.IOAddress;
+            newAnalogInput.ScanTime = newAnalogInputDTO.ScanTime;
+            newAnalogInput.Scan = newAnalogInputDTO.Scan;
+            newAnalogInput.Description = newAnalogInputDTO.Description;
+            newAnalogInput.Units = newAnalogInputDTO.Unit;
+            List<Alarm> alarmsToAdd = new List<Alarm>();
+            foreach (UpdateAlarmDTO alarmDTO in newAnalogInputDTO.Alarms)
+            {
+                Alarm alarm = new Alarm();
+                if(newAnalogInputDTO.id == "")
+                {
+                    alarm.Id = Guid.NewGuid();
+                }
+                else
+                {
+                    alarm.Id = Guid.Parse(alarmDTO.id);
+                }
+                alarm.CriticalValue = alarmDTO.CriticalValue;
+                alarm.Units = alarmDTO.Units;
+                if (alarmDTO.Priority == 1)
+                {
+                    alarm.Priority = Alarm.AlarmPriority.LOW;
+
+                }
+                else if (alarmDTO.Priority == 2)
+                {
+                    alarm.Priority = Alarm.AlarmPriority.MEDIUM;
+
+                }
+                else if (alarmDTO.Priority == 3)
+                {
+                    alarm.Priority = Alarm.AlarmPriority.HIGH;
+
+                }
+                else
+                {
+                    return BadRequest();
+                }
+
+                if (alarmDTO.Type == 0)
+                {
+                    alarm.Type = Alarm.AlarmType.LOW;
+
+                }
+                else if (alarmDTO.Type == 1)
+                {
+                    alarm.Type = Alarm.AlarmType.HIGH;
+
+                }
+                else
+                {
+                    return BadRequest();
+                }
+                alarmsToAdd.Add(alarm);
+            }
+            newAnalogInput.Alarms = alarmsToAdd;
+            await _analogInputService.Update(newAnalogInput);
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            await _analogInputService.Delete(Guid.Parse(id));
+
             return Ok();
         }
     }

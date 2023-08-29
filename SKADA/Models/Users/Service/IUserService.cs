@@ -12,6 +12,7 @@ namespace SKADA.Models.Users.Service
         Task<User> GetByEmail(string email);
         Task<IEnumerable<User>> GetAll();
         Task<IEnumerable<User>> GetClients();
+        List<User> GetAllAdmins();
 
     }
 }

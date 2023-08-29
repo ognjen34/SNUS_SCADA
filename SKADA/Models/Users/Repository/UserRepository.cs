@@ -45,7 +45,15 @@ namespace SKADA.Models.Users.Repository
 
         public async Task<T> GetByEmail(string email)
         {
-            return await _users.FirstOrDefaultAsync(u => u.Email == email);
+            await Globals.Globals._dBSemaphore.WaitAsync();
+            try
+            {
+                return await _users.FirstOrDefaultAsync(u => u.Email == email);
+            }
+            finally
+            {
+                Globals.Globals._dBSemaphore.Release();
+            }
         }
 
         public async Task<IEnumerable<T>> GetUsersByAnalogDataId(Guid analogDataId)

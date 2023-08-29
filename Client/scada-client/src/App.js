@@ -57,10 +57,10 @@ function App() {
                     )
                     
                 }>
-                <Route path="tags" element={<AdminTags/>}/>
+                <Route path="tags" element={<AdminTags  data={data}/>}/>
                 <Route path="users" element={<AdminUsers />}/>
                 <Route path="devices" element = {<AdminDevices/>} />     
-                
+
             </Route>
             
         </Routes>

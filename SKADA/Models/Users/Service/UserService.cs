@@ -25,6 +25,10 @@ namespace SKADA.Models.Users.Service
             await _userRepository.Add(user);
         }
 
+        public  List<User> GetAllAdmins()
+        {
+            return _userRepository.GetAll().Result.Where(user => user.Role == UserType.ADMIN).ToList();
+        }
         public async Task DeleteUser(Guid id)
         {
             var user = await _userRepository.GetById(id);

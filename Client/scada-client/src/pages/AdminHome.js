@@ -18,7 +18,8 @@ import { LogOut } from '../services/authService';
 const pages = ['Tags', 'Users', 'Devices'];
 const settings = ['Logout'];
 
-function AdminHome() {
+function AdminHome(props) {
+    console.log(props.data)
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -70,7 +71,7 @@ function AdminHome() {
                 </Container>
             </AppBar>
             <div className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <Outlet />
+                <Outlet data={props.data} />
             </div>
         </div>
     );

@@ -7,6 +7,7 @@ namespace SKADA.Models.Inputs.Service
         public Task Create(DigitalInput input);
         public Task startDigitalDataReading();
         Task<IEnumerable<DigitalInput>> GetAll();
-
+        public Task Delete(Guid id);
+        Task Update(DigitalInput newDigitalInput);
     }
 }
