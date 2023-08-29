@@ -81,5 +81,10 @@ namespace SKADA.Models.Users.Repository
             }
             return input;
         }
+
+        public async Task<IEnumerable<T>> GetClients()
+        {
+            return await _users.Where(user => user.Role == UserType.CLIENT).ToListAsync();
+        }
     }
 }

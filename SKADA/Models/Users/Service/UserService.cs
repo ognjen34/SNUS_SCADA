@@ -39,6 +39,11 @@ namespace SKADA.Models.Users.Service
             }
         }
 
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            return await _userRepository.GetAll();
+        }
+
         public async Task<User> GetByEmail(string email)
         {
 
@@ -64,6 +69,11 @@ namespace SKADA.Models.Users.Service
             
 
             return user;
+        }
+
+        public async Task<IEnumerable<User>> GetClients()
+        {
+            return await _userRepository.GetClients();
         }
 
         public async Task<User> UpdateUser(Guid id, User user)

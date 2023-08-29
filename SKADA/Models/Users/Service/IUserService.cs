@@ -10,6 +10,8 @@ namespace SKADA.Models.Users.Service
         Task<User> GetById(Guid id);
         Task DeleteUser(Guid id);
         Task<User> GetByEmail(string email);
+        Task<IEnumerable<User>> GetAll();
+        Task<IEnumerable<User>> GetClients();
 
     }
 }
