@@ -3,6 +3,9 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import { useState, useEffect } from 'react';
 import {checkCookieValidity} from './services/authService'
+import AdminTags from './pages/AdminTags';
+import AdminUsers from './pages/AdminUsers';
+import AdminDevices from './pages/AdminDevices';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -53,8 +56,13 @@ function App() {
                         <Navigate to="/login" />
                     )
                     
-                }
-            />
+                }>
+                <Route path="tags" element={<AdminTags/>}/>
+                <Route path="users" element={<AdminUsers />}/>
+                <Route path="devices" element = {<AdminDevices/>} />     
+                
+            </Route>
+            
         </Routes>
     );
 }
