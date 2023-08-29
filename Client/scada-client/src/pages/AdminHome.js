@@ -13,6 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { LogOut } from '../services/authService';
 
 const pages = ['Tags', 'Users', 'Devices'];
 const settings = ['Logout'];
@@ -39,10 +40,16 @@ function AdminHome() {
         setAnchorElUser(null);
     };
 
+    const handleLogOut = async () => 
+    {
+        await LogOut();
+        window.location.reload();
+    }
+
     return (
         <div>
             <AppBar position="static">
-                <Container maxWidth="xl">
+                <Container maxWidth="l">
                     <Toolbar disableGutters>
                     <div>
                         <Link to="tags">
@@ -54,6 +61,9 @@ function AdminHome() {
                         <Link to="devices">
                             <button className='btn menu-btn'>Devices</button>
                         </Link>
+                        
+                        <button onClick = {handleLogOut} className='btn menu-btn'>Logout</button>
+                        
 
                     </div>
                     </Toolbar>

@@ -23,4 +23,12 @@ async function checkCookieValidity() {
     return response.data;
   }
 
-export {checkCookieValidity,SignIn}
+async function LogOut() {
+    const response = await axios.get(`${API_BASE_URL}/logout`, {
+      withCredentials: true
+    });
+    console.log(response)
+    return response.data;
+  }
+
+export {checkCookieValidity,SignIn,LogOut}

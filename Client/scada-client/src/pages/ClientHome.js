@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './ClientHome.css';
 import TagInstance from './TagInstance';
 import AlarmInstance from './AlarmInstance';
-
+import { LogOut } from '../services/authService';
 import tagSocketService from '../services/tagSocketService'; 
 import alarmSocketService from '../services/alarmSocketService'; 
+import Toolbar from '@mui/material/Toolbar';
+import AppBar from '@mui/material/AppBar';
+import Container from '@mui/material/Container';
 
 tagSocketService.startConnection();
 alarmSocketService.startConnection();
@@ -66,8 +69,24 @@ function ClientHome(props) {
         });
     });
 
+    const handleLogOut = async () => 
+    {
+        await LogOut();
+        window.location.reload();
+    }
     return (
-        <div className="client-container">
+      <>
+      <AppBar position="static" >
+                <Container maxWidth="l" >
+                    <Toolbar disableGutters>
+                    <div>
+                <button onClick = {handleLogOut} className='btn menu-btn'>Logout</button>   
+                </div>
+                    </Toolbar>
+                </Container>
+            </AppBar>                 
+
+        <div className="client-container">                 
           <div className="scrollable-container">
             <div className="tag-container">
               {digitalTags.map(tag => (
@@ -86,6 +105,7 @@ function ClientHome(props) {
             </div>
           </div>
         </div>
+        </>
       );
 }
 

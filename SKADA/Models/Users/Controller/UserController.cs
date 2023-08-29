@@ -129,5 +129,16 @@ namespace SKADA.Models.Users.Controller
         {
             return await _userService.GetClients();
         }
+
+        [HttpGet("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Name);
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+
+            return Ok();
+        }
     }
 }
