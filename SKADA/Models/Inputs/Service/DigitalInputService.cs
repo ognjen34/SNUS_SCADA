@@ -67,6 +67,12 @@ namespace SKADA.Models.Inputs.Service
                     {
 
                         Device device = _deviceRepository.GetByIOAddress(digitalInput.IOAddress).Result;
+                        if (device == null)
+                        {
+                            device = new Device();
+                            device.IOAdress = "0";
+                            device.Value = 0;
+                        }
                         DigitalReadInstance ioDigitalData = new DigitalReadInstance
                         (
                             new Guid(),

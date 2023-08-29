@@ -4,6 +4,7 @@ using SKADA.Models.Devices.Model;
 using SKADA.Models.Devices.Service;
 using SKADA.Models.DTOS;
 using SKADA.Models.Users.Service;
+using System.Security.Claims;
 
 namespace SKADA.Models.Devices.Controller
 {
@@ -19,10 +20,18 @@ namespace SKADA.Models.Devices.Controller
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<List<string>> GetAll()
+        public async Task<IEnumerable<Device>> GetAll()
         { 
-             return await _deviceService.GetAllDeviceAddresses();
+             return await _deviceService.GetDevices();
         }
+        [HttpDelete("delete/{id}")]
+        public async Task<bool> deleteDevice(string id)
+        {
+            await _deviceService.Delete(id);
+
+            return true;
+        }
+        
         [AllowAnonymous]
         [HttpPost("device")]
         public async Task<IActionResult> CreateDevice([FromBody] CreateDeviceDTO deviceDTO)

@@ -86,6 +86,11 @@ namespace SKADA.Models.Inputs.Service
                 {
 
                     Device device = _deviceRepository.GetByIOAddress(analogInput.IOAddress).Result;
+                    if (device == null) {
+                            device = new Device();
+                            device.IOAdress = "0";
+                            device.Value = 0;
+                        }
                     AnalogReadInstance ioAnalogData = new AnalogReadInstance
                     (
                         new Guid(),
