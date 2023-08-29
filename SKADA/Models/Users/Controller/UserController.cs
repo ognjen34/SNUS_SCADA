@@ -49,7 +49,7 @@ namespace SKADA.Models.Users.Controller
 
 
         [HttpPost("register")]
-        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+        
         public async Task<IActionResult> AddUser([FromBody] CreateUserDTO user)
         {
             
@@ -119,5 +119,15 @@ namespace SKADA.Models.Users.Controller
             return Ok(user);
         }
 
+        [HttpGet("users")]
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            return await _userService.GetAll();
+        }
+        [HttpGet("clients")]
+        public async Task<IEnumerable<User>> GetClients()
+        {
+            return await _userService.GetClients();
+        }
     }
 }

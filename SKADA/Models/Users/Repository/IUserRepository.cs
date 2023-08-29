@@ -6,6 +6,7 @@ namespace SKADA.Models.Users.Repository
     {
         Task<T> GetByEmail(string email);
         Task<IEnumerable<T>> GetAll();
+        Task<IEnumerable<T>> GetClients();
         Task<T> GetById(Guid id);
         Task Add(T user);
         Task Update(T user);
