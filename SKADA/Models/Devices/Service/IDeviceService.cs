@@ -6,6 +6,8 @@ namespace SKADA.Models.Devices.Service
     {
         Task Simulation();
         Task<List<String>> GetAllDeviceAddresses();
+        Task<IEnumerable<Device>> GetDevices();
         Task Add(Device device);
+        Task Delete(string id);
     }
 }

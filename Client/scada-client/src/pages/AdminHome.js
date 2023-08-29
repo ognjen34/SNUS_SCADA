@@ -59,7 +59,7 @@ function AdminHome() {
                     </Toolbar>
                 </Container>
             </AppBar>
-            <div className="main-content">
+            <div className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Outlet />
             </div>
         </div>
