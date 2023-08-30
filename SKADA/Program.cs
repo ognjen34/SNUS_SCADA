@@ -10,6 +10,7 @@ using SKADA.Models.Inputs.Service;
 using SKADA.Models.Users.Model;
 using SKADA.Models.Users.Repository;
 using SKADA.Models.Users.Service;
+using SKADA.Models.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +35,8 @@ builder.Services.AddTransient<IAnalogReadInstanceService, AnalogReadInstanceServ
 builder.Services.AddTransient<IAlarmInstanceRepository, AlarmInstanceRepository>();
 builder.Services.AddTransient<IAlarmRepository, AlarmRepository>();
 builder.Services.AddTransient<IAlarmService, AlarmService>();
-
+builder.Services.AddTransient<ShutdownService>();
+builder.Services.AddHostedService(provider => provider.GetRequiredService<ShutdownService>());
 
 builder.Services.AddCors(options =>
 {
@@ -109,5 +111,6 @@ using (var scope = app.Services.CreateScope())
     Console.WriteLine(dbContext.Users.First().Name);
     Console.WriteLine(dbContext.Users.Last().Name);
 }
+
 app.Run();
 

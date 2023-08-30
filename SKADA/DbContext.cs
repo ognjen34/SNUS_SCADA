@@ -7,6 +7,7 @@ using SKADA.Models.Inputs.Model;
 using SKADA.Models.Outputs.Model;
 using SKADA.Models.Devices.Model;
 using SKADA.Models.Alarms.Model;
+using SKADA.Models.Utils;
 
 public class AppDbContext : DbContext
 {
@@ -90,11 +91,10 @@ public class AppDbContext : DbContext
         Users.AddAsync(
         clientUser);
         Users.AddAsync(adminUser);
-        DeviceConfig deviceConfig1 = new DeviceConfig(0,100,SimulationType.RTU);
-        DeviceConfig deviceConfig2 = new DeviceConfig(-1,-1,SimulationType.COS);
-        Device.Add(new Device("uredjaj1", 0, SKADA.Models.Devices.Model.Device.DeviceType.RTU,deviceConfig1));
-        Device.Add(new Device("uredjaj2", 0, SKADA.Models.Devices.Model.Device.DeviceType.SIMULATION,deviceConfig2));
-
+        string xmlContent = File.ReadAllText("SCADA_config.xml");
+        List<Device> devices = XMLSerializer.DeserializeFromXml<Device>(xmlContent);
+        Console.WriteLine(devices);
+        Device.AddRangeAsync(devices);
         this.SaveChanges();
     }
 }

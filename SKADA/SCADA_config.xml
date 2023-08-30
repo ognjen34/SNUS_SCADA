@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-16"?>
+<Devices>
+  <Device>
+    <Id>8e979f23-236f-4345-bdfe-c0d6a4d645f1</Id>
+    <IOAdress>uredjaj1</IOAdress>
+    <DeviceType>RTU</DeviceType>
+    <DeviceConfig>
+      <LowLimit>0</LowLimit>
+      <HighLimit>100</HighLimit>
+      <SimulationType>RTU</SimulationType>
+    </DeviceConfig>
+  </Device>
+  <Device>
+    <Id>2e31f6c9-2447-4429-8204-a5d84eeeb3d4</Id>
+    <IOAdress>uredjaj2</IOAdress>
+    <DeviceType>SIMULATION</DeviceType>
+    <DeviceConfig>
+      <SimulationType>SIN</SimulationType>
+    </DeviceConfig>
+  </Device>
+</Devices>
