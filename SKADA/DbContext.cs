@@ -41,6 +41,21 @@ public class AppDbContext : DbContext
                 cfg.Property(dc => dc.SimulationType);
             });
         });
+        modelBuilder.Entity<User>()
+        .HasMany(u => u.analogInputs)
+        .WithMany()
+        .UsingEntity<UserAnalogInput>(
+            j => j.HasOne(uai => uai.AnalogInput).WithMany(),
+            j => j.HasOne(uai => uai.User).WithMany()
+        );
+
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.digitalInputs)
+            .WithMany()
+            .UsingEntity<UserDigitalInput>(
+                j => j.HasOne(udi => udi.DigitalInput).WithMany(),
+                j => j.HasOne(udi => udi.User).WithMany()
+            );
     }
     public  void InitDataBase()
     {

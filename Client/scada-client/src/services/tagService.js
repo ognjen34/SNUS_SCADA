@@ -77,6 +77,21 @@ async function CreateAnalog(analogTagDTO) {
     return response.data;
   }
 
+  async function GetAllAnalog() {
+    const response = await axios.get(`${API_BASE_URL}/all`, {
+        withCredentials: true
+      });
+  
+    return response.data;
+  }
+  async function GetAllDigital() {
+    const response = await axios.get(`${API_BASE_URL_DIGITAL}/all`, {
+        withCredentials: true
+      });
+  
+    return response.data;
+  }
 
 
-export {CreateAnalog,DeleteAnalog,CreateDigital,DeleteDigital,UpdateDigital,UpdateAnalog,GetAnalog,GetDigital}
+
+export {CreateAnalog,DeleteAnalog,CreateDigital,DeleteDigital,UpdateDigital,UpdateAnalog,GetAnalog,GetDigital, GetAllAnalog, GetAllDigital}

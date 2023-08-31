@@ -1,11 +1,12 @@
-﻿using SKADA.Models.Users.Model;
+﻿using SKADA.Models.DTOS;
+using SKADA.Models.Users.Model;
 
 namespace SKADA.Models.Users.Service
 {
     public interface IUserService
     {
-        Task AddUser(DTOS.CreateUserDTO user);
-        Task<User> UpdateUser(Guid id, User user);
+        Task AddUser(CreateUserDTO user);
+        Task<User> UpdateUser(CreateUserDTO user);
         Task<bool> UserExists(string email);
         Task<User> GetById(Guid id);
         Task DeleteUser(Guid id);

@@ -10,8 +10,8 @@ namespace SKADA.Models.Users.Model
         public string Email { get; set; }
         public string Password { get; set; }
         public UserType Role { get; set; }
-        public List<AnalogInput> analogInputs { get; set; }
-        public List<DigitalInput> digitalInputs { get; set; }
+        public ICollection<AnalogInput> analogInputs { get; set; }
+        public ICollection<DigitalInput> digitalInputs { get; set; }
 
 
         public User()

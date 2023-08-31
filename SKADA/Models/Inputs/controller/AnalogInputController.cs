@@ -29,11 +29,18 @@ namespace SKADA.Models.Inputs.Controller
 
         [Authorize(Policy = "ClientOnly")]
         [HttpGet]
-        public async Task<List<AnalogInput>> GetAll()
+        public async Task<List<AnalogInput>> GetAllClients()
         {
             var userNameClaim = User.FindFirst(ClaimTypes.Name);
             User user = _userService.GetByEmail(userNameClaim.Value).Result;
-            return user.analogInputs;
+            return user.analogInputs.ToList();
+        }
+
+        [HttpGet("all")]
+        public async Task<IEnumerable<AnalogInput>> GetAll()
+        {
+
+            return await _analogInputService.GetAll();
         }
 
         [Authorize(Policy = "AdminOnly")]

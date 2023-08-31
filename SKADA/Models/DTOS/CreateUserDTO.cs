@@ -11,8 +11,8 @@
 
         public string Password { get; set; }
 
-        List<String> analogInputsIds { get; set; }
+        public List<String> AnalogInputsIds { get; set; }
 
-        List<String> digitalInputsIds { get; set; }
+        public List<String> DigitalInputsIds { get; set; }
     }
 }
