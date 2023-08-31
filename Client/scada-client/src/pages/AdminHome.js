@@ -70,7 +70,7 @@ function AdminHome(props) {
                     </Toolbar>
                 </Container>
             </AppBar>
-            <div className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <div className="main-content" >
                 <Outlet data={props.data} />
             </div>
         </div>

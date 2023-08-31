@@ -24,7 +24,22 @@ async function AddUser(name, surname, email,password, analogInputsIds, digitalIn
       withCredentials: true
     });
   
+    return response;
+  }
+
+  async function UpdateUser( name, surname, email,password,analogInputsIds, digitalInputsIds) {
+    const response = await axios.put(`${API_BASE_URL}/update`, {
+      'Name': name,
+    'Surname': surname,
+    'Email': email,
+    'Password': password,
+    'AnalogInputsIds': analogInputsIds,
+    'DigitalInputsIds': digitalInputsIds
+  }, {
+        withCredentials: true
+      });
+  
     return response.data;
   }
 
-export {GetClients, AddUser}
+export {GetClients, AddUser, UpdateUser}

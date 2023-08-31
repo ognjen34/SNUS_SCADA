@@ -13,6 +13,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle'; 
 import Button from '@mui/material/Button'; 
+import EditClientsAnalogInputs from './EditClientsAnalogInputs';
+import EditClientsDigitalInputs from './EditClientsDigitalInputs';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -40,9 +42,23 @@ function AdminUsers() {
     const [users, setUsers] = useState([]);
     const [rows, setRows] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openAnalogDialog, setOpenAnalogDialog] = useState(false);
+    const [openDigitalDialog, setOpenDigitalDialog] = useState(false);
+    const [selectedClient, setSelectedClient] = useState(users[0])
 
-    function handleButtonClick(index) {
-        console.log(users[index]);
+    const [change, SetChange] = useState(true);
+
+
+    function handleAnalogButtonClick(index) {
+      console.log(users[index]);
+      setSelectedClient(users[index])
+      setOpenAnalogDialog(true);
+    }
+
+    function handleDigitalButtonClick(index) {
+      console.log(users[index]);
+      setSelectedClient(users[index])
+      setOpenDigitalDialog(true)
     }
 
     const handleOpenDialog = () => {
@@ -50,7 +66,10 @@ function AdminUsers() {
     };
 
     const handleCloseDialog = () => {
+        SetChange(!change)
         setOpenDialog(false);
+        setOpenAnalogDialog(false)
+        setOpenDigitalDialog(false)
     };
 
     useEffect(() => {
@@ -72,7 +91,7 @@ function AdminUsers() {
         }
     
         fetchClients();
-      }, []); 
+      }, [change]); 
     return (
         <div>
             
@@ -83,12 +102,33 @@ function AdminUsers() {
                     <RegistrationForm onCloseDialog={handleCloseDialog} />
                 </DialogContent>
             </Dialog>
+
+            <Dialog open={openAnalogDialog} onClose={handleCloseDialog} >
+                <DialogTitle>Edit Analog inputs</DialogTitle>
+                <DialogContent>
+                    {/* Pass the handleCloseDialog function to the RegistrationForm */}
+                    <EditClientsAnalogInputs onCloseDialog={handleCloseDialog} selectedclient = {selectedClient}></EditClientsAnalogInputs>
+                    
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={openDigitalDialog} onClose={handleCloseDialog}>
+                <DialogTitle>Edit Digital Inputs</DialogTitle>
+                <DialogContent>
+                    {/* Pass the handleCloseDialog function to the RegistrationForm */}
+                    <EditClientsDigitalInputs onCloseDialog={handleCloseDialog} selectedclient = {selectedClient}></EditClientsDigitalInputs>
+                </DialogContent>
+            </Dialog>
+
+
             <TableContainer component={Paper}>
-            <Table sx={{ Width: 700 }} aria-label="customized table">
+            <Table sx={{ Width: 1000 }} aria-label="customized table">
             <TableHead>
                 <TableRow>
                 <StyledTableCell>Users</StyledTableCell>
-                <StyledTableCell align="right">Manage Tags</StyledTableCell>
+                <StyledTableCell align="right">Analog Inputs</StyledTableCell>
+                <StyledTableCell align="right">Digital Inputs</StyledTableCell>
+
                 </TableRow>
             </TableHead>
             <TableBody>
@@ -97,8 +137,8 @@ function AdminUsers() {
                     <StyledTableCell component="th" scope="row">
                     {row.fullname}
                     </StyledTableCell>
-                    <StyledTableCell align="right"><button onClick={() => handleButtonClick(row.index)}>Add Tags</button></StyledTableCell>
-
+                    <StyledTableCell align="right"><button onClick={() => handleAnalogButtonClick(row.index)}>Edit</button></StyledTableCell>
+                    <StyledTableCell align="right"><button onClick={() => handleDigitalButtonClick(row.index)}>Edit</button></StyledTableCell>
                 </StyledTableRow>
                 ))}
             </TableBody>
