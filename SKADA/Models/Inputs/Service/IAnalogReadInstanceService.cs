@@ -6,6 +6,7 @@ namespace SKADA.Models.Inputs.Service
     {
         Task<AnalogReadInstance> Get(Guid id);
         Task<AnalogReadInstance> GetByTagId(Guid id);
+        Task<IEnumerable<AnalogReadInstance>> GetAllAnalogReads();
         Task Create(AnalogReadInstance input);
     }
 }

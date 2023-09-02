@@ -6,9 +6,11 @@ namespace SKADA.Models.Inputs.Service
     public class AnalogReadInstanceService : IAnalogReadInstanceService
     {
         private readonly IAnalogReadInstanceRepository _analogReadInstanceRepository;
-        public AnalogReadInstanceService(IAnalogReadInstanceRepository analogReadInstanceRepository)
+        private readonly IAnalogInputRepository _analogInputRepository;
+        public AnalogReadInstanceService(IAnalogReadInstanceRepository analogReadInstanceRepository, IAnalogInputRepository analogInputRepository)
         {
             _analogReadInstanceRepository = analogReadInstanceRepository;
+            _analogInputRepository = analogInputRepository;
         }
         public async Task Create(AnalogReadInstance input)
         {
@@ -23,6 +25,23 @@ namespace SKADA.Models.Inputs.Service
         public Task<AnalogReadInstance> GetByTagId(Guid id)
         {
             return _analogReadInstanceRepository.GetByTagId(id);
+        }
+
+        public async Task<IEnumerable<AnalogReadInstance>> GetAllAnalogReads()
+        {
+            IEnumerable<AnalogInput> analogInputs = await _analogInputRepository.GetAll();
+            
+            List<AnalogReadInstance> lastAnalogReads = new List<AnalogReadInstance>();
+            foreach(AnalogInput analogInput in analogInputs)
+            {
+                IEnumerable<AnalogReadInstance> digitalReadInstances = await _analogReadInstanceRepository.GetAllSorted(analogInput.Id);
+                lastAnalogReads.Add(digitalReadInstances.First());
+            }
+
+            lastAnalogReads = lastAnalogReads.OrderBy(x => x.Timestamp).ToList();
+
+
+            return lastAnalogReads;
         }
     }
 }
