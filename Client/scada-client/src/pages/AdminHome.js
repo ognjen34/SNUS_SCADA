@@ -62,6 +62,9 @@ function AdminHome(props) {
                         <Link to="devices">
                             <button className='btn menu-btn'>Devices</button>
                         </Link>
+                        <Link to="reports">
+                            <button className='btn menu-btn'>Reports</button>
+                        </Link>
                         
                         <button onClick = {handleLogOut} className='btn menu-btn'>Logout</button>
                         

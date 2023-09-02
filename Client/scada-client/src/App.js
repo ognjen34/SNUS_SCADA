@@ -6,6 +6,7 @@ import {checkCookieValidity} from './services/authService'
 import AdminTags from './pages/AdminTags';
 import AdminUsers from './pages/AdminUsers';
 import AdminDevices from './pages/AdminDevices';
+import Reports from './pages/Reports';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -59,6 +60,7 @@ function App() {
                 }>
                 <Route path="tags" element={<AdminTags  data={data}/>}/>
                 <Route path="users" element={<AdminUsers />}/>
+                <Route path="reports" element={<Reports />}/>
                 <Route path="devices" element = {<AdminDevices/>} />     
 
             </Route>
