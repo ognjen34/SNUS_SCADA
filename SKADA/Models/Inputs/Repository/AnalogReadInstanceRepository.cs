@@ -43,6 +43,24 @@ namespace SKADA.Models.Inputs.Repository
             return input;
         }
 
+        public async Task<IEnumerable<AnalogReadInstance>> GetAllSorted(Guid id)
+        {
+            await Globals.Globals._dBSemaphore.WaitAsync();
+            IEnumerable<AnalogReadInstance> analogReadInstances;
+            try
+            {
+                analogReadInstances = _context.AnalogReadInstance
+                    .Where(x => x.TagId == id)
+                    .OrderByDescending(x => x.Timestamp)
+                    .ToList();
+            }
+            finally
+            {
+                Globals.Globals._dBSemaphore.Release();
+            }
+            return analogReadInstances;
+        }
+
         public Task<IEnumerable<AnalogReadInstance>> GetAll()
         {
             throw new NotImplementedException();

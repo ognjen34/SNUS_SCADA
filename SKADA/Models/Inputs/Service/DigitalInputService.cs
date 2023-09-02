@@ -128,5 +128,21 @@ namespace SKADA.Models.Inputs.Service
                 }
             }).Start();
         }
+
+        public async Task<IEnumerable<DigitalReadInstance>> GetAllDigitalReads()
+        {
+            IEnumerable<DigitalInput> digitalInputs = await _digitalInputRepository.GetAll();
+            
+            List<DigitalReadInstance> lastDigitalReads = new List<DigitalReadInstance>();
+            foreach(DigitalInput digitalInput in digitalInputs)
+            {
+                IEnumerable<DigitalReadInstance> digitalReadInstances = await _digitalReadInstanceRepository.GetAllSorted(digitalInput.Id);
+                lastDigitalReads.Add(digitalReadInstances.First());
+            }
+
+            lastDigitalReads = lastDigitalReads.OrderBy(x => x.Timestamp).ToList();
+
+            return lastDigitalReads;
+        }
     }
 }

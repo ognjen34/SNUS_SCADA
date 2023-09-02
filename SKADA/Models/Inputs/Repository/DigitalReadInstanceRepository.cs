@@ -66,6 +66,41 @@ namespace SKADA.Models.Inputs.Repository
             return digitalReadInstance;
         }
 
+        public async Task<DigitalReadInstance> GetByTagId(Guid id)
+        {
+            await Globals.Globals._dBSemaphore.WaitAsync();
+            DigitalReadInstance digitalReadInstance;
+            try
+            {
+                digitalReadInstance = _context.DigitalReadInstances.FirstOrDefault(e => e.TagId == id);
+            }
+            finally
+            {
+                Globals.Globals._dBSemaphore.Release();
+            }
+            return digitalReadInstance;
+        }
+
+
+        public async Task<IEnumerable<DigitalReadInstance>> GetAllSorted(Guid id)
+        {
+            await Globals.Globals._dBSemaphore.WaitAsync();
+            IEnumerable<DigitalReadInstance> digitalReadInstances;
+            try
+            {
+                digitalReadInstances = _context.DigitalReadInstances
+                    .Where(x => x.TagId == id)
+                    .OrderByDescending(x => x.Timestamp)
+                    .ToList();
+            }
+            finally
+            {
+                Globals.Globals._dBSemaphore.Release();
+            }
+            return digitalReadInstances;
+        }
+
+
         public async Task<IEnumerable<DigitalReadInstance>> GetAll()
         {
             await Globals.Globals._dBSemaphore.WaitAsync();

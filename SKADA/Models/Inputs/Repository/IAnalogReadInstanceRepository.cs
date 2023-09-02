@@ -5,6 +5,7 @@ namespace SKADA.Models.Inputs.Repository
     public interface IAnalogReadInstanceRepository
     {
         Task<IEnumerable<AnalogReadInstance>> GetAll();
+        Task<IEnumerable<AnalogReadInstance>> GetAllSorted(Guid id);
         Task<AnalogReadInstance> Get(Guid id);
         Task<AnalogReadInstance> Create(AnalogReadInstance input);
         Task<AnalogReadInstance> GetByTagId(Guid id);

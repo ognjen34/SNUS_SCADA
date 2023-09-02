@@ -38,6 +38,12 @@ namespace SKADA.Models.Inputs.Controller
             return user.analogInputs.ToList();
         }
 
+        [HttpGet("digitalreads")]
+        public async Task<IEnumerable<AnalogReadInstance>> GetAllCAnalogReads()
+        {
+            return await _analogReadInstanceService.GetAllAnalogReads();
+        }
+
         [HttpGet("all")]
         public async Task<IEnumerable<AnalogInput>> GetAll()
         {
