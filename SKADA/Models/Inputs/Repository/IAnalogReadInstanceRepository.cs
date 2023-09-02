@@ -8,7 +8,11 @@ namespace SKADA.Models.Inputs.Repository
         Task<AnalogReadInstance> Get(Guid id);
         Task<AnalogReadInstance> Create(AnalogReadInstance input);
         Task<AnalogReadInstance> GetByTagId(Guid id);
-        
-        
+        Task<List<AnalogReadInstance>> GetAllTagsValues(Guid id);
+        Task<List<AnalogReadInstance>> GetAllTagsInDateRange(DateTime start, DateTime end);
+
+
+
+
     }
 }

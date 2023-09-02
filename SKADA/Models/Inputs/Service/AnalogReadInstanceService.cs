@@ -20,6 +20,22 @@ namespace SKADA.Models.Inputs.Service
             return _analogReadInstanceRepository.Get(id);
         }
 
+        public async Task<List<AnalogReadInstance>> GetAllTagsInDateRange(DateTime start, DateTime end)
+        {
+            List<AnalogReadInstance> ari = await _analogReadInstanceRepository.GetAllTagsInDateRange(start, end);
+            ari = ari.OrderBy(tag => tag.Timestamp).ToList();
+            return ari;
+
+        }
+
+        public async Task<List<AnalogReadInstance>> GetAllTagsValues(string id)
+        {
+            List<AnalogReadInstance> tags = await _analogReadInstanceRepository.GetAllTagsValues(Guid.Parse(id));
+            tags = tags.OrderBy(tag => tag.Value).ToList();
+
+            return tags;
+        }
+
         public Task<AnalogReadInstance> GetByTagId(Guid id)
         {
             return _analogReadInstanceRepository.GetByTagId(id);

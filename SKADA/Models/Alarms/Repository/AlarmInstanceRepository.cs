@@ -47,6 +47,23 @@ namespace SKADA.Models.Alarms.Repository
             }
         }
 
+        public async Task<List<AlarmInstance>> GetAllInDateRange(DateTime start, DateTime end)
+        {
+            await Globals.Globals._dBSemaphore.WaitAsync();
+            try
+            {
+                var alarmInstancesInRange = _context.AlarmInstances
+                    .Where(ai => ai.Timestamp >= start && ai.Timestamp <= end)
+                    .ToList();
+
+                return alarmInstancesInRange;
+            }
+            finally
+            {
+                Globals.Globals._dBSemaphore.Release();
+            }
+        }
+
         public async Task<AlarmInstance> GetById(Guid id)
         {
             await Globals.Globals._dBSemaphore.WaitAsync();

@@ -17,14 +17,16 @@ namespace SKADA.Models.Inputs.Controller
     public class AnalogInputController : ControllerBase
     {
         private readonly IAnalogInputService _analogInputService;
+        private readonly IAnalogReadInstanceService _analogReadInstanceService;
         private readonly IDeviceService _deviceService;
         private readonly IUserService _userService;
 
-        public AnalogInputController(IUserService userService,IAnalogInputService analogInputService, IDeviceService deviceService)
+        public AnalogInputController(IUserService userService,IAnalogInputService analogInputService, IDeviceService deviceService, IAnalogReadInstanceService analogReadInstanceService)
         {
             _userService = userService;
             _analogInputService = analogInputService;
             _deviceService = deviceService;
+            _analogReadInstanceService = analogReadInstanceService;
         }
 
         [Authorize(Policy = "ClientOnly")]
@@ -41,6 +43,18 @@ namespace SKADA.Models.Inputs.Controller
         {
 
             return await _analogInputService.GetAll();
+        }
+        [HttpGet("{id}")]
+        public async Task<List<AnalogReadInstance>> GetAllValues(string id)
+        {
+
+            return await _analogReadInstanceService.GetAllTagsValues(id);
+        }
+
+        [HttpGet("data")]
+        public async Task<List<AnalogReadInstance>> GetAll([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            return await _analogReadInstanceService.GetAllTagsInDateRange(startDate, endDate);
         }
 
         [Authorize(Policy = "AdminOnly")]

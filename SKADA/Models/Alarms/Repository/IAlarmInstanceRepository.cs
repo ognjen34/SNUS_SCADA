@@ -8,5 +8,6 @@ namespace SKADA.Models.Alarms.Repository
         Task Add(AlarmInstance alarm);
         Task Update(AlarmInstance alarm);
         Task Delete(AlarmInstance alarm);
+        Task<List<AlarmInstance>> GetAllInDateRange(DateTime start,DateTime end);
     }
 }

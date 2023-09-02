@@ -5,6 +5,7 @@ using SKADA.Models.Inputs.Model;
 using SKADA.Models.Inputs.Repository;
 using SKADA.Models.Users.Model;
 using SKADA.Models.Users.Repository;
+using System.Collections.Generic;
 
 namespace SKADA.Models.Alarms.Service
 {
@@ -50,6 +51,13 @@ namespace SKADA.Models.Alarms.Service
             analogInput.Alarms = analogInput.Alarms.Where(alarm => alarm.Id != alarmId).ToList();
             await _analogInputRepository.Update(analogInput);
             await _alarmRepository.Delete(alarm);
+        }
+
+        public async Task<List<AlarmInstance>> GetAllInDateRange(DateTime start, DateTime end)
+        {
+            List<AlarmInstance> alarms = await _alarmInstanceRepository.GetAllInDateRange(start, end);
+            alarms = alarms.OrderBy(alarm => alarm.Timestamp).ToList();
+            return alarms;
         }
     }
 }

@@ -80,6 +80,37 @@ namespace SKADA.Models.Inputs.Repository
             }
             return digitalReadInstances;
         }
+        public async Task<List<DigitalReadInstance>> GetAllTagsInDateRange(DateTime start, DateTime end)
+        {
+            await Globals.Globals._dBSemaphore.WaitAsync();
+            try
+            {
+                var ari = _context.DigitalReadInstances
+                    .Where(ai => ai.Timestamp >= start && ai.Timestamp <= end)
+                    .ToList();
+
+                return ari;
+            }
+            finally
+            {
+                Globals.Globals._dBSemaphore.Release();
+            }
+        }
+
+        public async Task<List<DigitalReadInstance>> GetAllTagsValues(Guid id)
+        {
+            await Globals.Globals._dBSemaphore.WaitAsync();
+            List<DigitalReadInstance> inputs;
+            try
+            {
+                inputs = _context.DigitalReadInstances.Where(e => e.TagId == id).ToList();
+            }
+            finally
+            {
+                Globals.Globals._dBSemaphore.Release();
+            }
+            return inputs;
+        }
 
         public async Task<DigitalReadInstance> Update(DigitalReadInstance digitalReadInstance)
         {

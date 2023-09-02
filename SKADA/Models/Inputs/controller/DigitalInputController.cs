@@ -16,11 +16,13 @@ namespace SKADA.Models.Inputs.Controller
     {
         private readonly IDigitalInputService _digitalInputService;
         private readonly IUserService _userService;
+        private readonly IDigitalReadInstanceService _readInstanceService;
 
-        public DigitalInputController(IDigitalInputService digitalInputService, IUserService userService)
+        public DigitalInputController(IDigitalInputService digitalInputService, IUserService userService, IDigitalReadInstanceService readInstanceService)
         {
             _digitalInputService = digitalInputService;
             _userService = userService;
+            _readInstanceService = readInstanceService;
         }
         [Authorize(Policy = "ClientOnly")]
         [HttpGet]
@@ -51,6 +53,17 @@ namespace SKADA.Models.Inputs.Controller
 
             await _digitalInputService.Create(digital);
             return Ok();
+        }
+        [HttpGet("{id}")]
+        public async Task<List<DigitalReadInstance>> GetAllValues(string id)
+        {
+
+            return await _readInstanceService.GetAllTagsValues(id);
+        }
+        [HttpGet("data")]
+        public async Task<List<DigitalReadInstance>> GetAll([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            return await _readInstanceService.GetAllTagsInDateRange(startDate, endDate);
         }
 
         [AllowAnonymous]

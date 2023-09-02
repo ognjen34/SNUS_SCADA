@@ -9,5 +9,9 @@ namespace SKADA.Models.Inputs.Repository
         Task<DigitalReadInstance> Create(DigitalReadInstance input);
         Task<DigitalReadInstance> Update(DigitalReadInstance input);
         Task<DigitalReadInstance> Delete(Guid id);
+        Task<List<DigitalReadInstance>> GetAllTagsValues(Guid id);
+        Task<List<DigitalReadInstance>> GetAllTagsInDateRange(DateTime start, DateTime end);
+
+
     }
 }
