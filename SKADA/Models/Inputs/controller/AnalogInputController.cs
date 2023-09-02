@@ -17,14 +17,16 @@ namespace SKADA.Models.Inputs.Controller
     public class AnalogInputController : ControllerBase
     {
         private readonly IAnalogInputService _analogInputService;
+        private readonly IAnalogReadInstanceService _analogReadInstanceService;
         private readonly IDeviceService _deviceService;
         private readonly IUserService _userService;
 
-        public AnalogInputController(IUserService userService,IAnalogInputService analogInputService, IDeviceService deviceService)
+        public AnalogInputController(IUserService userService,IAnalogInputService analogInputService, IDeviceService deviceService, IAnalogReadInstanceService analogReadInstanceService)
         {
             _userService = userService;
             _analogInputService = analogInputService;
             _deviceService = deviceService;
+            _analogReadInstanceService = analogReadInstanceService;
         }
 
         [Authorize(Policy = "ClientOnly")]
@@ -34,6 +36,12 @@ namespace SKADA.Models.Inputs.Controller
             var userNameClaim = User.FindFirst(ClaimTypes.Name);
             User user = _userService.GetByEmail(userNameClaim.Value).Result;
             return user.analogInputs.ToList();
+        }
+
+        [HttpGet("digitalreads")]
+        public async Task<IEnumerable<AnalogReadInstance>> GetAllCAnalogReads()
+        {
+            return await _analogReadInstanceService.GetAllAnalogReads();
         }
 
         [HttpGet("all")]

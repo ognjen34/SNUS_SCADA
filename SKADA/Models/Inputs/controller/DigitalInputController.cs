@@ -31,6 +31,12 @@ namespace SKADA.Models.Inputs.Controller
             return user.digitalInputs.ToList();
         }
 
+        [HttpGet("digitalreads")]
+        public async Task<IEnumerable<DigitalReadInstance>> GetAllCDigitalReads()
+        {
+            return await _digitalInputService.GetAllDigitalReads();
+        }
+
         [HttpGet("all")]
         public async Task<IEnumerable<DigitalInput>> GetAll()
         {
