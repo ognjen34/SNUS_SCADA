@@ -49,7 +49,7 @@ function DigitalValuesTagReport(props) {
       .then((data) => {
         console.log('Analog Value:', data);
         // Handle the response data here
-        setRows(data);
+        setRows(data.reverse());
       })
       .catch((error) => {
         console.error('Error fetching analog value:', error);

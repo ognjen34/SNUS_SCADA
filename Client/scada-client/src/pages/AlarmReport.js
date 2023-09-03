@@ -54,7 +54,7 @@ function AlarmReport(props) {
   .then((data) => {
     // Handle the response data here
     console.log('Alarms:', data);
-    setRows(data)
+    setRows(data.reverse())
   })
   .catch((error) => {
     // Handle errors here
@@ -81,6 +81,7 @@ function AlarmReport(props) {
             <StyledTableCell align="right">Alarm Type</StyledTableCell>
             <StyledTableCell align="right">Critical Value</StyledTableCell>
             <StyledTableCell align="right">Current Value</StyledTableCell>
+            <StyledTableCell align="right">Time</StyledTableCell>
     
           </TableRow>
         </TableHead>
@@ -94,6 +95,7 @@ function AlarmReport(props) {
               <StyledTableCell align="right">{row.alarmType}</StyledTableCell>
               <StyledTableCell align="right">{row.criticalValue}</StyledTableCell>
               <StyledTableCell align="right">{row.value}</StyledTableCell>
+              <StyledTableCell align="right">{row.timestamp}</StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>

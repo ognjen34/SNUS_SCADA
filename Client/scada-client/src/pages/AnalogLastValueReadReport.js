@@ -46,7 +46,7 @@ function AnalogLastValueReadReport(props) {
   .then((data) => {
     // Handle the response data here
     console.log('Alarms:', data);
-    setRows(data)
+    setRows(data.reverse())
   })
   .catch((error) => {
     // Handle errors here
