@@ -139,7 +139,8 @@ namespace SKADA.Models.Inputs.Controller
             foreach (UpdateAlarmDTO alarmDTO in newAnalogInputDTO.Alarms)
             {
                 Alarm alarm = new Alarm();
-                if(newAnalogInputDTO.id == "")
+
+                if (string.IsNullOrEmpty(alarmDTO.id))
                 {
                     alarm.Id = Guid.NewGuid();
                 }

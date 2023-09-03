@@ -1,4 +1,5 @@
-import './Login.css';
+import './Reports.css';
+
 import AdminHome from './AdminHome';
 import ClientHome from './ClientHome';
 import { GetDigitalLastValues } from '../services/reportService';
@@ -54,7 +55,7 @@ function DigitalLastValueReadReport(props) {
   };
 
   return (
-    <div className="home-container">
+    <div className="center-div">
       <TableContainer sx={{ minWidth: 400 ,maxWidth:1000 , marginTop:10 }}component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>

@@ -15,7 +15,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button'; 
 import EditClientsAnalogInputs from './EditClientsAnalogInputs';
 import EditClientsDigitalInputs from './EditClientsDigitalInputs';
-
+import './AdminUsers.css';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -93,7 +93,7 @@ function AdminUsers() {
         fetchClients();
       }, [change]); 
     return (
-        <div>
+        <div className='center-div'>
             
             <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <DialogTitle>Register User</DialogTitle>
@@ -121,8 +121,8 @@ function AdminUsers() {
             </Dialog>
 
 
-            <TableContainer component={Paper}>
-            <Table sx={{ Width: 1000 }} aria-label="customized table">
+            <TableContainer component={Paper} className="table-container">
+            <Table aria-label="customized table">
             <TableHead>
                 <TableRow>
                 <StyledTableCell>Users</StyledTableCell>
@@ -143,8 +143,8 @@ function AdminUsers() {
                 ))}
             </TableBody>
             </Table>
-            </TableContainer>
-            <button onClick={handleOpenDialog}>Add User</button>
+            </TableContainer >
+            <button onClick={handleOpenDialog} className='button-margin'>Add User</button>
         </div>
         
     );

@@ -54,7 +54,7 @@ function EditClientsAnalogInputs({ onCloseDialog, selectedclient }) {
             }
         }
         if (selectedclient) {
-            
+            console.log(selectedclient)
             setUsersAnalogInput(selectedclient['analogInputs'].map(obj => obj.id));
             console.log("mapapappapap::::")
             console.log(selectedclient['analogInputs'].map(obj => obj.id))

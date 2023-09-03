@@ -15,6 +15,7 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import { deleteDevice, getAllDevices } from '../services/deviceService';
 import AddDevice from './AddDevice';
+import './AdminReport.css'; // Import the CSS file
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -62,7 +63,7 @@ function AlarmReport(props) {
   };
 
   return (
-    <div className="home-container">
+    <div className="report-main-content">
       <div>
         <label>Start Date:</label>
         <input type="datetime-local" value={startDate} onChange={handleStartDateChange} />

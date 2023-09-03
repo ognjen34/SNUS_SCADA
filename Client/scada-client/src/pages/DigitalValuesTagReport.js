@@ -1,4 +1,5 @@
-import './Login.css';
+import './Reports.css';
+
 import AdminHome from './AdminHome';
 import ClientHome from './ClientHome';
 import { GetDigitalValuesFromTag } from '../services/reportService';
@@ -57,7 +58,7 @@ function DigitalValuesTagReport(props) {
   };
 
   return (
-    <div className="home-container">
+    <div className="center-div">
       <div>
         <label>Enter ID:</label>
         <input type="text" value={selectedId} onChange={handleIdChange} />

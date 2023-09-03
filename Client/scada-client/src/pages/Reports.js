@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Login.css';
+import './Reports.css';
 import AdminHome from './AdminHome';
 import ClientHome from './ClientHome';
 import AlarmReport from './AlarmReport';
@@ -18,8 +18,8 @@ function Reports(props) {
   };
 
   return (
-    <div className="home-container">
-      <div>
+    <div className="reports-main-content">
+      <div className="select-div">
         <label>Select an option: </label>
         <select value={selectedOption} onChange={handleOptionChange}>
           <option value="">Select an option</option>

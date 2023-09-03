@@ -97,6 +97,14 @@ namespace SKADA.Models.Devices.Service
                             {
                                 device.Value = newValue;
                             }
+                            if (device.Value >= device.deviceConfig.HighLimit)
+                            {
+                                device.Value = device.deviceConfig.HighLimit;
+                            }
+                            if (device.Value <= device.deviceConfig.LowLimit)
+                            {
+                                device.Value = device.deviceConfig.LowLimit;
+                            }
                         }
                     }
                     Console.WriteLine(device.IOAdress + "  " + device.Value);

@@ -1,4 +1,5 @@
-import './Login.css';
+import './Reports.css';
+
 import AdminHome from './AdminHome';
 import ClientHome from './ClientHome';
 import { GetAnalogDate } from '../services/reportService';
@@ -62,7 +63,7 @@ function AnalogDateReport(props) {
   };
 
   return (
-    <div className="home-container">
+    <div className="center-div">
       <div>
         <label>Start Date:</label>
         <input type="datetime-local" value={startDate} onChange={handleStartDateChange} />

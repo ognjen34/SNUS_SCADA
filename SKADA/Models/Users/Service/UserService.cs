@@ -27,6 +27,8 @@ namespace SKADA.Models.Users.Service
             user.Email = userDTO.Email;
             user.Password = userDTO.Password;
             user.Role = UserType.CLIENT;
+            user.analogInputs = new List<AnalogInput>();
+            user.digitalInputs = new List<DigitalInput>();
 
             await _userRepository.Add(user);
         }

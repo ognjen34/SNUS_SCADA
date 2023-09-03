@@ -78,9 +78,6 @@ const TagInstance = ({ id, description, isAdmin, ioAddress, scan, scanTime, unit
           </Typography>
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '16px' }}>
-          <IconButton color={isAlarmActive ? 'secondary' : 'primary'} onClick={handleAlarmClick}>
-            <Alarm />
-          </IconButton>
           <IconButton color="primary" onClick={handleDescriptionClick}>
             <Description />
           </IconButton>

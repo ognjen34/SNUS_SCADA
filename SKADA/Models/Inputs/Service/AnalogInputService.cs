@@ -211,10 +211,6 @@ namespace SKADA.Models.Inputs.Service
 
                     }           
                     }
-                    else
-                    {
-                        break;
-                    }
                     Thread.Sleep(analogInput.ScanTime * 1000);
 
                 }

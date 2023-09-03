@@ -1,5 +1,6 @@
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
+import './AdminHome.css'
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -53,22 +54,24 @@ function AdminHome(props) {
                 <Container maxWidth="l">
                     <Toolbar disableGutters>
                     <div>
-                        <Link to="tags">
+                        <Link to="tags" className='menu-link'>
                             <button className='btn menu-btn'>Tags</button>
                         </Link>
-                        <Link to="users">
+                        <Link to="users" className='menu-link'>
                             <button className='btn menu-btn'>Users</button>
                         </Link>
-                        <Link to="devices">
+                        <Link to="devices" className='menu-link'>
                             <button className='btn menu-btn'>Devices</button>
                         </Link>
-                        <Link to="reports">
+                        <Link to="reports" className='logout-link'>
                             <button className='btn menu-btn'>Reports</button>
                         </Link>
                         
-                        <button onClick = {handleLogOut} className='btn menu-btn'>Logout</button>
                         
 
+                    </div>
+                    <div style={{ marginLeft: 'auto' }}>
+                        <button onClick={handleLogOut} className='btn menu-btn'>Logout</button>
                     </div>
                     </Toolbar>
                 </Container>
