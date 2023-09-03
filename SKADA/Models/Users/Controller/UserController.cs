@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SKADA.Models.DTOS;
 using SKADA.Models.Users.Model;
 using SKADA.Models.Users.Service;
+using System.Security.Claims;
 
 namespace SKADA.Models.Users.Controller
 {
@@ -16,26 +20,36 @@ namespace SKADA.Models.Users.Controller
             _userService = userService;
         }
 
+        [Microsoft.AspNetCore.Authorization.AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
             User user = await _userService.GetByEmail(model.Username);
-            if (user == null)
+            
+            if(user == null)
             {
-                return NotFound("User not found");
+                return BadRequest("User with this email does not exist");
+
             }
-            else
+
+            var claims = new List<Claim>
             {
-                if(user.Password != model.Password)
-                {
-                    return BadRequest("Credetials are not good");
-                }
-                
-            }
+                new Claim(ClaimTypes.Name, user.Email.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity));
+
             return Ok(user);
         }
 
+
         [HttpPost("register")]
+        
         public async Task<IActionResult> AddUser([FromBody] CreateUserDTO user)
         {
             
@@ -54,10 +68,10 @@ namespace SKADA.Models.Users.Controller
 
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, User user)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateUser([FromBody] CreateUserDTO user)
         {
-            var existingUser = await _userService.UpdateUser(id, user);
+            var existingUser = await _userService.UpdateUser(user);
             if (existingUser == null)
             {
                 
@@ -87,5 +101,44 @@ namespace SKADA.Models.Users.Controller
             return user;
         }
 
+        [HttpGet("authorized")]
+        [Authorize(Policy = "ClientOnly")]
+
+        public async Task<IActionResult> GetAuthorizedDataAsync()
+        {
+
+            var userEmail = User.FindFirstValue(ClaimTypes.Name);
+
+            User user = await _userService.GetByEmail(userEmail);
+
+            if (user == null)
+            {
+                return Forbid();
+            }
+
+            return Ok(user);
+        }
+
+        [HttpGet("users")]
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            return await _userService.GetAll();
+        }
+        [HttpGet("clients")]
+        public async Task<IEnumerable<User>> GetClients()
+        {
+            return await _userService.GetClients();
+        }
+
+        [HttpGet("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Name);
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+
+            return Ok();
+        }
     }
 }

@@ -1,0 +1,21 @@
+.menu-btn {
+    background-color: #007bff; /* Blue background color */
+    color: #fff; /* White text color */
+    padding: 10px 20px; /* Padding around the text */
+    border: none; /* No border */
+    cursor: pointer; /* Show pointer cursor on hover */
+    margin-right: 10px; /* Margin between buttons */
+    text-decoration: none; /* Remove underlines from links */
+    height:100%;
+  }
+  
+  /* Style for the logout button */
+  .logout-btn {
+    background-color: #dc3545; /* Red background color */
+    color: #fff; /* White text color */
+    padding: 10px 20px; /* Padding around the text */
+    border: none; /* No border */
+    cursor: pointer; /* Show pointer cursor on hover */
+    text-decoration: none; /* Remove underlines from links */
+  }
+  

@@ -1,4 +1,6 @@
 ﻿using SKADA.Models.DTOS;
+using SKADA.Models.Inputs.Model;
+using SKADA.Models.Inputs.Repository;
 using SKADA.Models.Users.Model;
 using SKADA.Models.Users.Repository;
 
@@ -7,10 +9,14 @@ namespace SKADA.Models.Users.Service
     public class UserService : IUserService
     {
         private readonly IUserRepository<User> _userRepository;
+        private readonly IAnalogInputRepository _analogInputRepository;
+        private readonly IDigitalInputRepository _ditalInputRepository;
 
-        public UserService(IUserRepository<User> userRepository)
+        public UserService(IUserRepository<User> userRepository, IAnalogInputRepository analogInputRepository, IDigitalInputRepository digitalInputRepository)
         {
             _userRepository = userRepository;
+            _analogInputRepository = analogInputRepository;
+            _ditalInputRepository = digitalInputRepository;
         }
 
         public async Task AddUser(CreateUserDTO userDTO)
@@ -21,11 +27,17 @@ namespace SKADA.Models.Users.Service
             user.Email = userDTO.Email;
             user.Password = userDTO.Password;
             user.Role = UserType.CLIENT;
+            user.analogInputs = new List<AnalogInput>();
+            user.digitalInputs = new List<DigitalInput>();
 
             await _userRepository.Add(user);
         }
 
-        public async Task DeleteUser(int id)
+        public  List<User> GetAllAdmins()
+        {
+            return _userRepository.GetAll().Result.Where(user => user.Role == UserType.ADMIN).ToList();
+        }
+        public async Task DeleteUser(Guid id)
         {
             var user = await _userRepository.GetById(id);
             if (user != null)
@@ -37,6 +49,11 @@ namespace SKADA.Models.Users.Service
             {
                 Console.WriteLine("No such user");
             }
+        }
+
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            return await _userRepository.GetAll();
         }
 
         public async Task<User> GetByEmail(string email)
@@ -53,7 +70,7 @@ namespace SKADA.Models.Users.Service
             return user;
         }
 
-        public async Task<User> GetById(int id)
+        public async Task<User> GetById(Guid id)
         {
             User user = await _userRepository.GetById(id);
 
@@ -66,19 +83,42 @@ namespace SKADA.Models.Users.Service
             return user;
         }
 
-        public async Task<User> UpdateUser(int id, User user)
+        public async Task<IEnumerable<User>> GetClients()
         {
-           
-            var existingUser = await _userRepository.GetById(id);
+            return await _userRepository.GetClients();
+        }
+
+        public async Task<User> UpdateUser(CreateUserDTO user)
+        {
+            List<AnalogInput> newAnalogInputs = new List<AnalogInput>();
+            List<DigitalInput> newDigitalInputs = new List<DigitalInput>();
+
+            var existingUser = await _userRepository.GetByEmail(user.Email);
             if (existingUser == null)
             {
                 
                 return null;
             }
             existingUser.Email = user.Email;
-            existingUser.Role = user.Role;
             existingUser.Surname = user.Surname;
             existingUser.Name = user.Name;
+            foreach(String analogId in user.AnalogInputsIds)
+            {
+                AnalogInput analogInput = await _analogInputRepository.Get(new Guid(analogId));
+                newAnalogInputs.Add(analogInput);
+                
+
+                
+            }
+            foreach (String digitalId in user.DigitalInputsIds)
+            {
+
+                DigitalInput digitalInput = await _ditalInputRepository.Get(new Guid(digitalId));
+                newDigitalInputs.Add(digitalInput);
+
+            }
+            existingUser.analogInputs = newAnalogInputs;
+            existingUser.digitalInputs = newDigitalInputs;
             await _userRepository.Update(existingUser);
             return existingUser;
         }

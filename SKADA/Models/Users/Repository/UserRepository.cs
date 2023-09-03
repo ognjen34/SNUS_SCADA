@@ -15,7 +15,7 @@ namespace SKADA.Models.Users.Repository
         }
 
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetById(Guid id)
         {
             return await _users.FirstOrDefaultAsync(user => user.Id.Equals(id));
         }
@@ -45,7 +45,54 @@ namespace SKADA.Models.Users.Repository
 
         public async Task<T> GetByEmail(string email)
         {
-            return await _users.FirstOrDefaultAsync(u => u.Email == email);
+            await Globals.Globals._dBSemaphore.WaitAsync();
+            try
+            {
+                return await _users.FirstOrDefaultAsync(u => u.Email == email);
+            }
+            finally
+            {
+                Globals.Globals._dBSemaphore.Release();
+            }
+        }
+
+        public async Task<IEnumerable<T>> GetUsersByAnalogDataId(Guid analogDataId)
+        {
+            await Globals.Globals._dBSemaphore.WaitAsync();
+            IEnumerable<T> input;
+            try
+            {
+                input = await _users
+                .Where(user => user.analogInputs.Any(input => input.Id == analogDataId))
+                .ToListAsync();
+            }
+            finally
+            {
+                Globals.Globals._dBSemaphore.Release();
+            }
+            return input;
+        }
+
+        public async Task<IEnumerable<T>> GetUsersByDigitalDataId(Guid digitalDataId)
+        {
+            await Globals.Globals._dBSemaphore.WaitAsync();
+            IEnumerable<T> input;
+            try
+            {
+                input = await _users
+                .Where(user => user.digitalInputs.Any(input => input.Id == digitalDataId))
+                .ToListAsync();
+            }
+            finally
+            {
+                Globals.Globals._dBSemaphore.Release();
+            }
+            return input;
+        }
+
+        public async Task<IEnumerable<T>> GetClients()
+        {
+            return await _users.Where(user => user.Role == UserType.CLIENT).ToListAsync();
         }
     }
 }

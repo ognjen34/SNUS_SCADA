@@ -1,4 +1,6 @@
-﻿namespace SKADA.Models.Users.Model
+﻿using SKADA.Models.Inputs.Model;
+
+namespace SKADA.Models.Users.Model
 {
     public class User
     {
@@ -8,6 +10,9 @@
         public string Email { get; set; }
         public string Password { get; set; }
         public UserType Role { get; set; }
+        public ICollection<AnalogInput> analogInputs { get; set; }
+        public ICollection<DigitalInput> digitalInputs { get; set; }
+
 
         public User()
         {
@@ -22,6 +27,9 @@
             Email = email;
             Password = password;
             Role = role;
+            analogInputs = new List<AnalogInput>();
+            digitalInputs = new List<DigitalInput>();
+
         }
     }
 
